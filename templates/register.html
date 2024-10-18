@@ -12,10 +12,16 @@
             <div class="form-group">
                 {{ form.username.label }}<br>
                 {{ form.username(class_="form-input") }}
+                {% if form.username.errors %}
+                    <p class="text-danger">{{ form.username.errors[0] }}</p>
+                {% endif %}
             </div>
             <div class="form-group">
                 {{ form.email.label }}<br>
                 {{ form.email(class_="form-input") }}
+                {% if form.email.errors %}
+                    <p class="text-danger">{{ form.email.errors[0] }}</p>
+                {% endif %}
             </div>
             <div class="form-group">
                 {{ form.password.label }}<br>
@@ -35,6 +41,7 @@
             </div>
             <button type="submit" class="form-button">Sign Up</button>
         </form>
+        <p>Already have an account? <a href="{{ url_for('login') }}" class="form-button">Log in</a></p>
     </div>
 </body>
 </html>
