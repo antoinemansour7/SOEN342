@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <title>Admin Dashboard</title>
+</head>
+<body>
+    <h1>Admin Dashboard</h1>
+    <ul>
+        {% for offering in offerings %}
+            <li>{{ offering.location }} - {{ offering.start_time }} to {{ offering.end_time }} ({{ offering.lesson_type }})
+                {% if offering.is_available %}
+                    - Available
+                {% else %}
+                    - Not Available (Selected by instructor {{ offering.instructor_id }})
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
