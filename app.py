@@ -3,7 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, login_user, current_user, logout_user, login_required
 from models import db, User, Offering  # Correct import of db
-from forms import LoginForm, RegistrationForm
+from forms import LoginForm, RegistrationForm, OfferingForm
 
 
 app = Flask(__name__)
@@ -12,6 +12,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
 
 # Initialize db with app
 db.init_app(app)
+
 
 bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)
@@ -23,7 +24,7 @@ def load_user(user_id):
 
 @app.route('/')
 def index():
-    offerings = Offering.query.all()
+    offerings = Offering.query.all()  # Fetch all offerings from the database
     return render_template('index.html', offerings=offerings)
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -70,29 +71,35 @@ def register():
         return redirect(url_for('login'))
     return render_template('register.html', form=form)
 
-# Additional route for selecting offerings
-@app.route('/select_offering/<int:offering_id>')
+
+
+@app.route('/create_offering', methods=['GET', 'POST'])
 @login_required
-def select_offering(offering_id):
-    if current_user.role == 'instructor':
-        offering = Offering.query.get(offering_id)
-        if offering and offering.is_available:
-            offering.is_available = False
-            offering.instructor_id = current_user.id
-            db.session.commit()
-            flash('You have successfully selected the offering!', 'success')
-        else:
-            flash('Offering is not available.', 'danger')
-    else:
-        flash('Only instructors can select offerings.', 'danger')
-    return redirect(url_for('index'))
+def create_offering():
+    if current_user.role != 'admin':
+        flash('You do not have permission to create offerings.', 'danger')
+        return redirect(url_for('index'))  # Redirect to home page if not admin
+    
+    form = OfferingForm()
+    if form.validate_on_submit():
+        offering = Offering(
+            lesson_type=form.lesson_type.data,
+            mode=form.mode.data,
+            location=form.location.data,
+            start_time=form.start_time.data,
+            end_time=form.end_time.data,
+            schedule=form.schedule.data
+        )
+        db.session.add(offering)
+        db.session.commit()
+        flash('Offering created successfully!', 'success')
+        return redirect(url_for('index'))
+    
+    return render_template('create_offering.html', form=form)
 
-if __name__ == '__main__':
-    # Bind the app context to ensure that db commands are executed within the app context
-    with app.app_context():
-        db.create_all()  # Ensures that the database and tables are created if they don't exist
+
+
+
+if __name__ == "__main__":
     app.run(debug=True)
-
-
-
 

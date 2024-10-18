@@ -20,6 +20,13 @@
         <!-- Aesthetic Horizontal Line -->
         <hr class="styled-divider">
 
+        <!-- Admin Section (Create Offering) -->
+        {% if current_user.is_authenticated and current_user.role == 'admin' %}
+            <div class="admin-section">
+                <a href="{{ url_for('create_offering') }}" class="form-button">Create Offering</a>
+            </div>
+        {% endif %}
+
         <!-- Bottom Section (Available Offerings) -->
         <div class="bottom-section">
             <h2>Available Offerings</h2>

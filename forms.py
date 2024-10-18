@@ -29,3 +29,17 @@ class RegistrationForm(FlaskForm):
         user = User.query.filter_by(email=email.data).first()
         if user:
             raise ValidationError('That email is already registered. Please choose a different one.')
+        
+
+
+
+
+class OfferingForm(FlaskForm):
+    lesson_type = StringField('Lesson Type', validators=[DataRequired()])
+    mode = SelectField('Mode', choices=[('group', 'Group'), ('private', 'Private')], validators=[DataRequired()])
+    location = StringField('Location', validators=[DataRequired()])
+    start_time = StringField('Start Time', validators=[DataRequired()])
+    end_time = StringField('End Time', validators=[DataRequired()])
+    schedule = StringField('Schedule', validators=[DataRequired()])
+    submit = SubmitField('Create Offering')
+
