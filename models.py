@@ -27,16 +27,25 @@ class User(db.Model, UserMixin):
 class Offering(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     lesson_type = db.Column(db.String(50), nullable=False)
-    mode = db.Column(db.String(50), nullable=False)
     location = db.Column(db.String(100), nullable=False)
     start_time = db.Column(db.DateTime, nullable=False)
     end_time = db.Column(db.DateTime, nullable=False)
-    maximum_capacity = db.Column(db.Integer, nullable=True)
-    is_available = db.Column(db.Boolean, default=True)
-    attendees = db.relationship('User', secondary='attendees', backref='offerings')
+    maximum_capacity = db.Column(db.Integer, nullable=False)
+    available_spots = db.Column(db.Integer, nullable=False, default=0)
+    attendees = db.relationship('User', secondary=attendees, backref='attended_offerings')
+
+    def __init__(self, lesson_type, location, start_time, end_time, maximum_capacity):
+        self.lesson_type = lesson_type
+        self.location = location
+        self.start_time = start_time
+        self.end_time = end_time
+        self.maximum_capacity = maximum_capacity
+        self.available_spots = maximum_capacity
 
 
-
-    def __repr__(self):
-        return f"Offering('{self.lesson_type}', '{self.mode}', '{self.location}', '{self.schedule}')"
+attendees = db.Table('attendees',
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
+    db.Column('offering_id', db.Integer, db.ForeignKey('offering.id'), primary_key=True),
+    extend_existing=True  # Add this line to prevent the table redefinition error
+)
 

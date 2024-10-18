@@ -32,17 +32,29 @@
             <h2>Available Offerings</h2>
             <ul>
                 {% for offering in offerings %}
-                    <li>{{ offering.location }} - {{ offering.start_time }} to {{ offering.end_time }} ({{ offering.lesson_type }})
-                        {% if not offering.is_available %}
-                            - Not Available
+                    <li>
+                        {{ offering.lesson_type }} at {{ offering.location }} <br>
+                        {{ offering.start_time.strftime('%Y-%m-%d %H:%M') }} to {{ offering.end_time.strftime('%Y-%m-%d %H:%M') }} <br>
+                        Available spots: {{ offering.available_spots }} / {{ offering.maximum_capacity }}
+                        
+                        <!-- Check if the offering is available -->
+                        {% if offering.available_spots == 0 %}
+                            <p class="unavailable-text">Not Available</p>
                         {% else %}
-                            {% if current_user.is_authenticated %}
-                                <form action="{{ url_for('attend_offering', offering_id=offering.id) }}" method="POST">
-                                    <button type="submit">Attend</button>
-                                </form>
+                            <!-- Show the 'Attend' button only for customers -->
+                            {% if current_user.is_authenticated and current_user.role == 'customer' %}
+                                <!-- Check if the user has already attended the offering -->
+                                {% if current_user in offering.attendees %}
+                                    <p>You are already attending this offering.</p>
+                                {% else %}
+                                    <form action="{{ url_for('attend_offering', offering_id=offering.id) }}" method="POST">
+                                        <button type="submit" class="form-button">Attend</button>
+                                    </form>
+                                {% endif %}
                             {% endif %}
                         {% endif %}
                     </li>
+                    <hr>
                 {% endfor %}
             </ul>
         </div>

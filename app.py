@@ -85,23 +85,14 @@ def create_offering():
         return redirect(url_for('index'))
     
     if form.validate_on_submit():
-        # Check if it's a group lesson and set maximum capacity
-        if form.lesson_type.data == 'Group' and form.maximum_capacity.data is None:
-            flash('Please provide maximum capacity for group lessons.')
-            return render_template('create_offering.html', form=form)
-        
-        # Create the offering
         new_offering = Offering(
             lesson_type=form.lesson_type.data,
-            mode=form.mode.data,
             location=form.location.data,
             start_time=form.start_time.data,
             end_time=form.end_time.data,
-            maximum_capacity=form.maximum_capacity.data if form.lesson_type.data == 'Group' else None,
-            is_available=form.is_available.data
+            maximum_capacity=form.maximum_capacity.data
         )
         
-        # Add the new offering to the database
         db.session.add(new_offering)
         db.session.commit()
         
@@ -111,24 +102,36 @@ def create_offering():
     return render_template('create_offering.html', form=form)
 
 
-@app.route('/attend_offering/<int:offering_id>', methods=['POST'])
+
+
+
+@app.route('/attend/<int:offering_id>', methods=['POST'])
 @login_required
 def attend_offering(offering_id):
-    offering = Offering.query.get_or_404(offering_id)
+    offering = Offering.query.get(offering_id)
     
-    if offering.lesson_type == 'group' and len(offering.attendees) >= offering.maximum_capacity:
-        flash('This group lesson is full!', 'danger')
+    # Ensure that only customers can attend offerings
+    if current_user.role != 'customer':
+        flash('Only customers can attend offerings.')
         return redirect(url_for('index'))
     
-    # Check if the user is already attending this offering
+    # Check if the user has already attended this offering
     if current_user in offering.attendees:
-        flash('You are already attending this offering.', 'info')
-    else:
-        offering.attendees.append(current_user)
-        db.session.commit()
-        flash('You are now attending this offering!', 'success')
+        flash('You have already attended this offering.')
+        return redirect(url_for('index'))
     
+    # Check if there are available spots
+    if offering.available_spots > 0:
+        # Add the current user to the offering's attendees
+        offering.attendees.append(current_user)
+        offering.available_spots -= 1
+        db.session.commit()
+        flash('You have successfully attended the offering!')
+    else:
+        flash('No spots available for this offering.')
+
     return redirect(url_for('index'))
+
 
 
 
