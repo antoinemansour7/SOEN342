@@ -9,6 +9,7 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(150), nullable=False, unique=True)
     email = db.Column(db.String(150), nullable=False, unique=True)
     password = db.Column(db.String(150), nullable=False)
+    age = db.Column(db.Integer, nullable=False)  # Add the age field
     role = db.Column(db.String(50), nullable=False)  # 'admin', 'instructor', or 'customer'
 
 class Offering(db.Model):
