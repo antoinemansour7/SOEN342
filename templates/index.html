@@ -35,6 +35,12 @@
                     <li>{{ offering.location }} - {{ offering.start_time }} to {{ offering.end_time }} ({{ offering.lesson_type }})
                         {% if not offering.is_available %}
                             - Not Available
+                        {% else %}
+                            {% if current_user.is_authenticated %}
+                                <form action="{{ url_for('attend_offering', offering_id=offering.id) }}" method="POST">
+                                    <button type="submit">Attend</button>
+                                </form>
+                            {% endif %}
                         {% endif %}
                     </li>
                 {% endfor %}

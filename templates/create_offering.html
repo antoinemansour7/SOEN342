@@ -7,34 +7,43 @@
 <body>
     <div class="form-container">
         <h2>Create Offering</h2>
-        <form method="POST" action="{{ url_for('create_offering') }}">
+        <form method="POST" action="">
             {{ form.hidden_tag() }}
-            <div class="form-group">
+            <div>
                 {{ form.lesson_type.label }}<br>
-                {{ form.lesson_type(class_="form-input") }}
+                {{ form.lesson_type(size=30) }}<br>
             </div>
-            <div class="form-group">
+            <div>
                 {{ form.mode.label }}<br>
-                {{ form.mode(class_="form-input") }}
+                {{ form.mode(size=30) }}<br>
             </div>
-            <div class="form-group">
+            <div>
                 {{ form.location.label }}<br>
-                {{ form.location(class_="form-input") }}
+                {{ form.location(size=30) }}<br>
             </div>
-            <div class="form-group">
+            <div>
                 {{ form.start_time.label }}<br>
-                {{ form.start_time(class_="form-input") }}
+                {{ form.start_time() }}<br>
+                <small>Enter date and time in the format: YYYY-MM-DDTHH:MM</small>
             </div>
-            <div class="form-group">
+            <div>
                 {{ form.end_time.label }}<br>
-                {{ form.end_time(class_="form-input") }}
+                {{ form.end_time() }}<br>
+                <small>Enter date and time in the format: YYYY-MM-DDTHH:MM</small>
             </div>
-            <div class="form-group">
-                {{ form.schedule.label }}<br>
-                {{ form.schedule(class_="form-input") }}
+            <div>
+                {{ form.maximum_capacity.label }}<br>
+                {{ form.maximum_capacity() }}<br>
             </div>
-            <button type="submit" class="form-button">Create Offering</button>
+            <div>
+                {{ form.is_available.label }}<br>
+                {{ form.is_available() }}<br>
+            </div>
+            <div>
+                {{ form.submit() }}
+            </div>
         </form>
+        
     </div>
 </body>
 </html>

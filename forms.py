@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, SelectField, IntegerField  # Ensure all necessary imports are here
+from wtforms import StringField, PasswordField, SubmitField, SelectField, IntegerField,DateTimeField,BooleanField  # Ensure all necessary imports are here
 from wtforms.validators import DataRequired, Length, EqualTo, ValidationError, NumberRange
 from models import User
 
@@ -36,10 +36,10 @@ class RegistrationForm(FlaskForm):
 
 class OfferingForm(FlaskForm):
     lesson_type = StringField('Lesson Type', validators=[DataRequired()])
-    mode = SelectField('Mode', choices=[('group', 'Group'), ('private', 'Private')], validators=[DataRequired()])
+    mode = StringField('Mode', validators=[DataRequired()])
     location = StringField('Location', validators=[DataRequired()])
-    start_time = StringField('Start Time', validators=[DataRequired()])
-    end_time = StringField('End Time', validators=[DataRequired()])
-    schedule = StringField('Schedule', validators=[DataRequired()])
+    start_time = DateTimeField('Start Time', format='%Y-%m-%dT%H:%M', validators=[DataRequired()])
+    end_time = DateTimeField('End Time', format='%Y-%m-%dT%H:%M', validators=[DataRequired()])
+    maximum_capacity = IntegerField('Maximum Capacity', validators=[NumberRange(min=1)])
+    is_available = BooleanField('Is Available', default=True)
     submit = SubmitField('Create Offering')
-

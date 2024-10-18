@@ -4,11 +4,13 @@ from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, login_user, current_user, logout_user, login_required
 from models import db, User, Offering  # Correct import of db
 from forms import LoginForm, RegistrationForm, OfferingForm
+from flask_migrate import Migrate
 
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your_secret_key'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
+migrate = Migrate(app, db)
 
 # Initialize db with app
 db.init_app(app)
@@ -73,29 +75,60 @@ def register():
 
 
 
-@app.route('/create_offering', methods=['GET', 'POST'])
+@app.route('/create-offering', methods=['GET', 'POST'])
 @login_required
 def create_offering():
-    if current_user.role != 'admin':
-        flash('You do not have permission to create offerings.', 'danger')
-        return redirect(url_for('index'))  # Redirect to home page if not admin
-    
     form = OfferingForm()
+    
+    if current_user.role != 'admin':
+        flash('Only admins can create offerings!')
+        return redirect(url_for('index'))
+    
     if form.validate_on_submit():
-        offering = Offering(
+        # Check if it's a group lesson and set maximum capacity
+        if form.lesson_type.data == 'Group' and form.maximum_capacity.data is None:
+            flash('Please provide maximum capacity for group lessons.')
+            return render_template('create_offering.html', form=form)
+        
+        # Create the offering
+        new_offering = Offering(
             lesson_type=form.lesson_type.data,
             mode=form.mode.data,
             location=form.location.data,
             start_time=form.start_time.data,
             end_time=form.end_time.data,
-            schedule=form.schedule.data
+            maximum_capacity=form.maximum_capacity.data if form.lesson_type.data == 'Group' else None,
+            is_available=form.is_available.data
         )
-        db.session.add(offering)
+        
+        # Add the new offering to the database
+        db.session.add(new_offering)
         db.session.commit()
-        flash('Offering created successfully!', 'success')
+        
+        flash('New offering created successfully!')
         return redirect(url_for('index'))
     
     return render_template('create_offering.html', form=form)
+
+
+@app.route('/attend_offering/<int:offering_id>', methods=['POST'])
+@login_required
+def attend_offering(offering_id):
+    offering = Offering.query.get_or_404(offering_id)
+    
+    if offering.lesson_type == 'group' and len(offering.attendees) >= offering.maximum_capacity:
+        flash('This group lesson is full!', 'danger')
+        return redirect(url_for('index'))
+    
+    # Check if the user is already attending this offering
+    if current_user in offering.attendees:
+        flash('You are already attending this offering.', 'info')
+    else:
+        offering.attendees.append(current_user)
+        db.session.commit()
+        flash('You are now attending this offering!', 'success')
+    
+    return redirect(url_for('index'))
 
 
 
