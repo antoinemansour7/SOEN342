@@ -31,8 +31,10 @@ def login():
         return redirect(url_for('index'))
     form = LoginForm()
     if form.validate_on_submit():
+        # Look up the user by username
         user = User.query.filter_by(username=form.username.data).first()
         if user and bcrypt.check_password_hash(user.password, form.password.data):
+            # Log the user in
             login_user(user)
             return redirect(url_for('index'))
         else:

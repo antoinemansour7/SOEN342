@@ -12,6 +12,7 @@ body {
     height: 100vh;
 }
 
+/* Main container */
 .container {
     width: 70%;
     background-color: white;
@@ -21,12 +22,25 @@ body {
     margin-top: 50px;
 }
 
+/* Form container for login and sign-up */
+.form-container {
+    background-color: white;
+    padding: 2rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    width: 400px;
+    margin: auto;
+    margin-top: 50px;
+}
+
+/* Top Section: Login/Sign Up buttons */
 .top-section {
     display: flex;
     justify-content: flex-end;
     margin-bottom: 10px;
 }
 
+/* Aesthetic form buttons */
 .form-button {
     padding: 10px 20px;
     background-color: #4caf50;
@@ -43,18 +57,34 @@ body {
     background-color: #45a049;
 }
 
-/* Divider between login and offerings */
-.divider {
+/* Styled horizontal divider */
+.styled-divider {
     border: 0;
-    height: 2px;
-    background: #ddd;
+    height: 3px;
+    background: linear-gradient(to right, #4caf50, #45a049);
     margin-bottom: 20px;
 }
 
-.bottom-section {
-    margin-top: 20px;
+/* Form input styling */
+.form-group {
+    margin-bottom: 1rem;
 }
 
+.form-input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-top: 5px;
+    font-size: 16px;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #4caf50;
+}
+
+/* Bottom Section for offerings */
 .bottom-section h2 {
     font-size: 24px;
     color: #444;
@@ -73,3 +103,14 @@ li {
 li:last-child {
     border-bottom: none;
 }
+
+/* Link styling */
+a {
+    color: #4caf50;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
