@@ -79,27 +79,36 @@ def register():
 @login_required
 def create_offering():
     form = OfferingForm()
-    
+
     if current_user.role != 'admin':
         flash('Only admins can create offerings!')
         return redirect(url_for('index'))
-    
+
     if form.validate_on_submit():
+        # Check if it's a private or group offering
+        if form.offering_type.data == 'Private':
+            maximum_capacity = 1
+        else:  # Group
+            maximum_capacity = form.maximum_capacity.data
+
+        # Create the offering
         new_offering = Offering(
             lesson_type=form.lesson_type.data,
             location=form.location.data,
             start_time=form.start_time.data,
             end_time=form.end_time.data,
-            maximum_capacity=form.maximum_capacity.data
+            maximum_capacity=maximum_capacity
         )
-        
+
+        # Add the new offering to the database
         db.session.add(new_offering)
         db.session.commit()
-        
+
         flash('New offering created successfully!')
         return redirect(url_for('index'))
-    
+
     return render_template('create_offering.html', form=form)
+
 
 
 

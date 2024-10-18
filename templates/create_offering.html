@@ -3,6 +3,17 @@
 <head>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <title>Create Offering</title>
+    <script>
+        function toggleCapacityField() {
+            var offeringType = document.getElementById("offering_type").value;
+            var capacityField = document.getElementById("capacity_field");
+            if (offeringType === 'Group') {
+                capacityField.style.display = 'block';
+            } else {
+                capacityField.style.display = 'none';
+            }
+        }
+    </script>
 </head>
 <body>
     <div class="form-container">
@@ -13,7 +24,10 @@
                 {{ form.lesson_type.label }}<br>
                 {{ form.lesson_type(size=30) }}<br>
             </div>
-            
+            <div>
+                {{ form.offering_type.label }}<br>
+                {{ form.offering_type(id="offering_type", onchange="toggleCapacityField()") }}<br>
+            </div>
             <div>
                 {{ form.location.label }}<br>
                 {{ form.location(size=30) }}<br>
@@ -28,16 +42,14 @@
                 {{ form.end_time() }}<br>
                 <small>Enter date and time in the format: YYYY-MM-DDTHH:MM</small>
             </div>
-            <div>
+            <div id="capacity_field" style="display:none;">
                 {{ form.maximum_capacity.label }}<br>
                 {{ form.maximum_capacity() }}<br>
             </div>
-            
             <div>
                 {{ form.submit() }}
             </div>
         </form>
-        
     </div>
 </body>
 </html>

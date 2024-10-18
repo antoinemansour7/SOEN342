@@ -36,10 +36,11 @@ class RegistrationForm(FlaskForm):
 
 class OfferingForm(FlaskForm):
     lesson_type = StringField('Lesson Type', validators=[DataRequired()])
+    offering_type = SelectField('Offering Type', choices=[('Private', 'Private'), ('Group', 'Group')], validators=[DataRequired()])
     location = StringField('Location', validators=[DataRequired()])
     start_time = DateTimeField('Start Time', format='%Y-%m-%dT%H:%M', validators=[DataRequired()])
     end_time = DateTimeField('End Time', format='%Y-%m-%dT%H:%M', validators=[DataRequired()])
-    maximum_capacity = IntegerField('Maximum Capacity', validators=[NumberRange(min=1)])
+    maximum_capacity = IntegerField('Maximum Capacity', validators=[NumberRange(min=1)], default=1)
     submit = SubmitField('Create Offering')
 
 
