@@ -1,19 +1,40 @@
 # SOEN342 Project
 
-#### Antoine Mansour (40250454) Section H
-#### Sadee Mohammad Shadman (40236919) Scetion H
+### Antoine Mansour (40250454) Section H
+### Sadee Mohammad Shadman (40236919) Scetion H    
 
-![Use Case UML](./USE%20CASE%20UML.jpg)  
+---
 
-![Domain Model](Domain%20Model.PNG)  
+Use Case UML:    
 
-![Package Diagram](Package%20Dragram.PNG)  
+![Use Case UML](./USE%20CASE%20UML.jpg)      
 
-![System Sequence Success Scenario](System%20Sequence%20Success.PNG)  
 
-![System Sequence Failure Scenario](System%20Sequence%20Failure.PNG)  
+Domain Model:
 
-![System Sequence Instructor Scenario](System%20Sequence%20Instructor.PNG)  
+![Domain Model](Domain%20Model.PNG)        
+
+
+Package Diagram:
+
+![Package Diagram](Package%20Dragram.PNG)     
+
+
+System Sequence Diagram of Administrators (success scenario):
+
+![System Sequence Success Scenario](System%20Sequence%20Success.PNG)        
+
+
+System Sequence Diagram of Administrators (failure scenario):
+
+![System Sequence Failure Scenario](System%20Sequence%20Failure.PNG)     
+
+
+System Sequence Diagram of Instructors:
+
+![System Sequence Instructor Scenario](System%20Sequence%20Instructor.PNG)      
+
+---    
 
 
 ### Operation Contracts
