@@ -172,6 +172,20 @@ def remove_attendee(offering_id, user_id):
         flash(f"{user.username} has been removed from the offering.", "success")
     return redirect(url_for('view_offering', offering_id=offering_id))
 
+# Route to delete an offering (admin-only)
+@app.route('/offering/<int:offering_id>/delete', methods=['POST'])
+@login_required
+def delete_offering(offering_id):
+    if current_user.role != 'admin':
+        flash("Access restricted to admins only.", "danger")
+        return redirect(url_for('index'))
+    
+    offering = Offering.query.get_or_404(offering_id)
+    db.session.delete(offering)
+    db.session.commit()
+    flash("The offering has been deleted successfully.", "success")
+    return redirect(url_for('index'))
+
 
 if __name__ == "__main__":
     app.run(debug=True)
