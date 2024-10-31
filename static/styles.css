@@ -3,46 +3,47 @@
 
 body {
     font-family: 'Roboto', sans-serif;
-    background-color: #f1f1f1;
+    background-color: #f5f7fa; /* Softer background color */
     margin: 0;
     padding: 0;
     display: flex;
     justify-content: center;
-    align-items: flex-start;
-    height: 100vh;
+    align-items: center;
+    min-height: 100vh;
+    color: #333;
 }
 
 /* Main container */
 .container {
-    width: 70%;
+    width: 75%;
     background-color: white;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* Softer, more subtle shadow */
+    border-radius: 10px;
     padding: 2rem;
-    margin-top: 50px;
+    margin: 2rem 0;
 }
 
 /* Form container for login and sign-up */
 .form-container {
-    background-color: white;
+    background-color: #ffffff;
     padding: 2rem;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-    width: 400px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    width: 380px;
     margin: auto;
-    margin-top: 50px;
+    margin-top: 2rem;
 }
 
 /* Top Section: Login/Sign Up buttons */
 .top-section {
     display: flex;
     justify-content: flex-end;
-    margin-bottom: 10px;
+    margin-bottom: 1rem;
 }
 
 /* Aesthetic form buttons */
 .form-button {
-    padding: 10px 20px;
+    padding: 12px 25px;
     background-color: #4caf50;
     color: white;
     border: none;
@@ -51,37 +52,49 @@ body {
     margin-left: 10px;
     cursor: pointer;
     text-decoration: none;
+    transition: all 0.3s ease;
 }
 
 .form-button:hover {
-    background-color: #45a049;
+    background-color: #3e8e41; /* Darker green on hover */
 }
 
 /* Styled horizontal divider */
 .styled-divider {
     border: 0;
-    height: 3px;
-    background: linear-gradient(to right, #4caf50, #45a049);
-    margin-bottom: 20px;
+    height: 2px;
+    background: linear-gradient(to right, #4caf50, #3e8e41);
+    margin-bottom: 1.5rem;
 }
 
 /* Form input styling */
 .form-group {
-    margin-bottom: 1rem;
+    margin-bottom: 1.2rem;
 }
 
 .form-input {
     width: 100%;
-    padding: 10px;
+    padding: 12px;
     border: 1px solid #ddd;
-    border-radius: 4px;
+    border-radius: 6px;
     margin-top: 5px;
     font-size: 16px;
+    transition: border-color 0.3s;
 }
 
 .form-input:focus {
     outline: none;
     border-color: #4caf50;
+    box-shadow: 0 0 5px rgba(76, 175, 80, 0.2);
+}
+
+/* Section title styling */
+h2 {
+    font-size: 26px;
+    color: #333;
+    margin-bottom: 1rem;
+    text-align: center;
+    font-weight: 700;
 }
 
 /* Bottom Section for offerings */
@@ -90,14 +103,17 @@ body {
     color: #444;
 }
 
+/* List styles */
 ul {
     list-style-type: none;
     padding: 0;
 }
 
 li {
-    padding: 10px 0;
-    border-bottom: 1px solid #ddd;
+    padding: 12px 0;
+    border-bottom: 1px solid #e1e1e1;
+    display: flex;
+    justify-content: space-between;
 }
 
 li:last-child {
@@ -108,9 +124,18 @@ li:last-child {
 a {
     color: #4caf50;
     text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s;
 }
 
 a:hover {
+    color: #3e8e41;
     text-decoration: underline;
 }
 
+/* Enhanced styling for login/signup form text */
+p {
+    text-align: center;
+    color: #666;
+    font-size: 14px;
+}
