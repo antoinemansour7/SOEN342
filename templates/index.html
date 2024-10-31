@@ -33,14 +33,26 @@
             <ul>
                 {% for offering in offerings %}
                     <li class="offering-card">
-                        <h3>{{ offering.lesson_type }} at {{ offering.location }}</h3>
-                        <p class="time-slot">
-                            {{ offering.start_time.strftime('%B %d') }}: {{ offering.start_time.strftime('%I:%M %p') }} to {{ offering.end_time.strftime('%I:%M %p') }}
-                        </p>
-                        <p class="spots-available">
-                            Available spots: <span>{{ offering.available_spots }} / {{ offering.maximum_capacity }}</span>
-                        </p>
-                        
+                        {% if current_user.is_authenticated and current_user.role == 'admin' %}
+                            <a href="{{ url_for('view_offering', offering_id=offering.id) }}" class="offering-link">
+                                <h3>{{ offering.lesson_type }} at {{ offering.location }}</h3>
+                                <p class="time-slot">
+                                    {{ offering.start_time.strftime('%B %d') }}: {{ offering.start_time.strftime('%I:%M %p') }} to {{ offering.end_time.strftime('%I:%M %p') }}
+                                </p>
+                                <p class="spots-available">
+                                    Available spots: <span>{{ offering.available_spots }} / {{ offering.maximum_capacity }}</span>
+                                </p>
+                            </a>
+                        {% else %}
+                            <h3>{{ offering.lesson_type }} at {{ offering.location }}</h3>
+                            <p class="time-slot">
+                                {{ offering.start_time.strftime('%B %d') }}: {{ offering.start_time.strftime('%I:%M %p') }} to {{ offering.end_time.strftime('%I:%M %p') }}
+                            </p>
+                            <p class="spots-available">
+                                Available spots: <span>{{ offering.available_spots }} / {{ offering.maximum_capacity }}</span>
+                            </p>
+                        {% endif %}
+        
                         <!-- Check if the offering is available -->
                         {% if offering.available_spots == 0 %}
                             <p class="unavailable-text">Not Available</p>
