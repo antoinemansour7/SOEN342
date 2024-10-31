@@ -142,6 +142,52 @@ def attend_offering(offering_id):
     return redirect(url_for('index'))
 
 
+from flask import render_template, redirect, url_for, flash, request
+from flask_login import login_required, current_user
+from models import db, User, Offering
+
+# Route to view an offering's details, including attendees (admin-only)
+@app.route('/offering/<int:offering_id>')
+@login_required
+def view_offering(offering_id):
+    if current_user.role != 'admin':
+        flash("Access restricted to admins only.", "danger")
+        return redirect(url_for('index'))
+    
+    offering = Offering.query.get_or_404(offering_id)
+    return render_template('view_offering.html', offering=offering)
+
+# Route to remove an attendee from an offering (admin-only)
+@app.route('/offering/<int:offering_id>/remove_attendee/<int:user_id>', methods=['POST'])
+@login_required
+def remove_attendee(offering_id, user_id):
+    if current_user.role != 'admin':
+        flash("Access restricted to admins only.", "danger")
+        return redirect(url_for('index'))
+    
+    offering = Offering.query.get_or_404(offering_id)
+    user = User.query.get_or_404(user_id)
+
+    # Remove user from attendees
+    if user in offering.attendees:
+        offering.attendees.remove(user)
+        db.session.commit()
+        flash(f"{user.username} has been removed from the offering.", "success")
+    return redirect(url_for('view_offering', offering_id=offering_id))
+
+# Route to delete an offering (admin-only)
+@app.route('/offering/<int:offering_id>/delete', methods=['POST'])
+@login_required
+def delete_offering(offering_id):
+    if current_user.role != 'admin':
+        flash("Access restricted to admins only.", "danger")
+        return redirect(url_for('index'))
+    
+    offering = Offering.query.get_or_404(offering_id)
+    db.session.delete(offering)
+    db.session.commit()
+    flash("The offering has been deleted successfully.", "success")
+    return redirect(url_for('index'))
 
 
 
