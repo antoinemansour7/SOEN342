@@ -168,9 +168,12 @@ def remove_attendee(offering_id, user_id):
     # Remove user from attendees
     if user in offering.attendees:
         offering.attendees.remove(user)
+        offering.available_spots += 1  # Increase available spots by 1
         db.session.commit()
         flash(f"{user.username} has been removed from the offering.", "success")
+    
     return redirect(url_for('view_offering', offering_id=offering_id))
+
 
 # Route to delete an offering (admin-only)
 @app.route('/offering/<int:offering_id>/delete', methods=['POST'])
