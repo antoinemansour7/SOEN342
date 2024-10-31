@@ -32,20 +32,22 @@
             <h2>Available Offerings</h2>
             <ul>
                 {% for offering in offerings %}
-                    <li>
-                        {{ offering.lesson_type }} at {{ offering.location }} <br>
-                        {{ offering.start_time.strftime('%Y-%m-%d %H:%M') }} to {{ offering.end_time.strftime('%Y-%m-%d %H:%M') }} <br>
-                        Available spots: {{ offering.available_spots }} / {{ offering.maximum_capacity }}
+                    <li class="offering-card">
+                        <h3>{{ offering.lesson_type }} at {{ offering.location }}</h3>
+                        <p class="time-slot">
+                            {{ offering.start_time.strftime('%B %d') }}: {{ offering.start_time.strftime('%I:%M %p') }} to {{ offering.end_time.strftime('%I:%M %p') }}
+                        </p>
+                        <p class="spots-available">
+                            Available spots: <span>{{ offering.available_spots }} / {{ offering.maximum_capacity }}</span>
+                        </p>
                         
                         <!-- Check if the offering is available -->
                         {% if offering.available_spots == 0 %}
                             <p class="unavailable-text">Not Available</p>
                         {% else %}
-                            <!-- Show the 'Attend' button only for customers -->
                             {% if current_user.is_authenticated and current_user.role == 'customer' %}
-                                <!-- Check if the user has already attended the offering -->
                                 {% if current_user in offering.attendees %}
-                                    <p>You are already attending this offering.</p>
+                                    <p class="attending-text">You are already attending this offering.</p>
                                 {% else %}
                                     <form action="{{ url_for('attend_offering', offering_id=offering.id) }}" method="POST">
                                         <button type="submit" class="form-button">Attend</button>
@@ -54,10 +56,11 @@
                             {% endif %}
                         {% endif %}
                     </li>
-                    <hr>
                 {% endfor %}
             </ul>
         </div>
+        
+        
     </div>
 </body>
 </html>
