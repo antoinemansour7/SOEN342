@@ -25,9 +25,9 @@ System Sequence Diagram of Administrator (Create Offering):
 ![System Sequence Success Scenario](SSD%20Admin%20Create%20Offering.PNG)         
 
 
-System Sequence Diagram of Instructors:
+System Sequence Diagram of Instructors (Accpet Offerings):
 
-![System Sequence Instructor Scenario](System%20Sequence%20Instructor.PNG)      
+![System Sequence Instructor Scenario](SSD%20Instrcutor%20Accept%20Offerings.PNG)      
 
 ---    
 
