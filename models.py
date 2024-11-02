@@ -20,7 +20,7 @@ class Child(db.Model):
     def __repr__(self):
         return f"Child('{self.name}', Age: {self.age}, Relation: {self.relation})"
 
-# Client model: Admin, Instructor, Customer
+# Client model: Represents a regular customer
 class Client(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(150), nullable=False, unique=True)
@@ -28,13 +28,27 @@ class Client(db.Model, UserMixin):
     phone = db.Column(db.String(15), nullable=True)
     password = db.Column(db.String(150), nullable=False)
     age = db.Column(db.String(10), nullable=False)
-    role = db.Column(db.String(50), nullable=False, default='client')  # 'admin', 'instructor', 'client'
-    
+
     # Guardian-child relationship
     children = db.relationship('Child', backref='guardian', lazy=True)
 
     def __repr__(self):
-        return f"Client('{self.username}', '{self.name}', '{self.role}')"
+        return f"Client('{self.username}', '{self.name}')"
+
+# Instructor model
+class Instructor(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(150), nullable=False, unique=True)
+    specialization = db.Column(db.String(100), nullable=False)  # e.g., "yoga", "swimming"
+    password = db.Column(db.String(150), nullable=False)
+    phone = db.Column(db.String(15), nullable=True)
+    city = db.Column(db.String(100), nullable=False)
+
+    # Relationship with Offering
+    offerings = db.relationship('Offering', backref='instructor', lazy=True)
+
+    def __repr__(self):
+        return f"Instructor('{self.username}', Specialization: {self.specialization}, City: {self.city})"
 
 class Offering(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -44,18 +58,24 @@ class Offering(db.Model):
     end_time = db.Column(db.DateTime, nullable=False)
     maximum_capacity = db.Column(db.Integer, nullable=False)
     available_spots = db.Column(db.Integer, nullable=False, default=0)
+    
+    # Foreign key linking Offering to Instructor
+    instructor_id = db.Column(db.Integer, db.ForeignKey('instructor.id'), nullable=False)
+
+    # Many-to-many relationship with Client
     attendees = db.relationship('Client', secondary=attendees, backref=db.backref('attended_offerings', lazy='dynamic'))
 
-    def __init__(self, lesson_type, location_id, start_time, end_time, maximum_capacity):
+    def __init__(self, lesson_type, location_id, start_time, end_time, maximum_capacity, instructor_id):
         self.lesson_type = lesson_type
         self.location_id = location_id
         self.start_time = start_time
         self.end_time = end_time
         self.maximum_capacity = maximum_capacity
         self.available_spots = maximum_capacity
+        self.instructor_id = instructor_id
 
     def __repr__(self):
-        return f"Offering('{self.lesson_type}', 'Location ID: {self.location_id}', '{self.start_time}', '{self.end_time}')"
+        return f"Offering('{self.lesson_type}', 'Location ID: {self.location_id}', Instructor ID: {self.instructor_id}, '{self.start_time}', '{self.end_time}')"
 
 # New Location model
 class Location(db.Model):
