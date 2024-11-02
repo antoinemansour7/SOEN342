@@ -20,14 +20,9 @@ Package Diagram:
 ![Package Diagram](Package%20Dragram.PNG)     
 
 
-System Sequence Diagram of Administrators (success scenario):
+System Sequence Diagram of Administrator (Create Offering):
 
-![System Sequence Success Scenario](System%20Sequence%20Success.PNG)        
-
-
-System Sequence Diagram of Administrators (failure scenario):
-
-![System Sequence Failure Scenario](System%20Sequence%20Failure.PNG)     
+![System Sequence Success Scenario](SSD%20Admin%20Create%20Offering.PNG)         
 
 
 System Sequence Diagram of Instructors:
