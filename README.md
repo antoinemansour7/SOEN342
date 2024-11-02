@@ -14,9 +14,9 @@ Domain Model:
 
 ![Domain Model](DomainModel.png)  
 
-Class DIagram:
+Class Diagram:
 
-![Domain Model](Class_Diagram.png)  
+![Domain Model](ClassDiagram.png)  
 
 
 Package Diagram:
