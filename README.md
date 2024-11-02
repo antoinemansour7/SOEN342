@@ -20,19 +20,19 @@ Package Diagram:
 ![Package Diagram](Package%20Dragram.PNG)     
 
 
-System Sequence Diagram of Administrator (Create Offering):
+System Sequence Diagram of Administrator:
 
-![System Sequence Admin Scenario](SSD%20Admin%20Create%20Offering.PNG)         
-
-
-System Sequence Diagram of Instructors (Accpet Offerings):
-
-![System Sequence Instructor Scenario](SSD%20Instrcutor%20Accept%20Offerings.PNG)      
+![System Sequence Admin Scenario](SSD%20Admin.PNG)         
 
 
-System Sequence Diagram of Clients (create Booking):
+System Sequence Diagram of Instructors:
 
-![System Sequence Client Scenario](SSD%20Client%20Create%20Booking.PNG)          
+![System Sequence Instructor Scenario](SSD%20Instructor.PNG)      
+
+
+System Sequence Diagram of Clients:
+
+![System Sequence Client Scenario](SSD%20Client.PNG)          
 
 ---    
 
