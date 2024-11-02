@@ -54,14 +54,14 @@ System Sequence Diagram of Clients (create Booking):
 
 ---
 
-#### 2. `createNewOffering`
+#### 2. `createOffering`
 
-**Operation**: `createNewOffering(offeringDetails)`    
+**Operation**: `createOffering()`    
 **Cross reference**: Use Case Process Offerings
 
 - **Preconditions**:  
   - The `Administrator` is logged in.
-  - The `offering` details must include valid location, schedule and lessonType.
+  - The `offering` details must include valid detals.
   
 - **Postconditions**:  
   - If the `offering` is unique (checked by `checkOfferingUniqueness`), the system creates the new offering.
@@ -109,6 +109,12 @@ System Sequence Diagram of Clients (create Booking):
 - **Postconditions**:  
   - The selected `offering` is now associated with the `instructor`.
   - The `offering` is marked as unavailable for other `instructors`.
+
+--- 
+
+Interaction Diagram of Create Offering (Admin):
+
+![Communication Diagram of Create Offering](Communication%20Diagram%20Create%20Offering.PNG)   
 
 
 
