@@ -12,7 +12,11 @@ Use Case UML:
 
 Domain Model:
 
-![Domain Model](Domain%20Model.PNG)        
+![Domain Model](DomainModel.png)  
+
+Class DIagram:
+
+![Domain Model](Class_Diagram.png)  
 
 
 Package Diagram:
