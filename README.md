@@ -118,7 +118,12 @@ System Sequence Diagram of Clients:
 
 Interaction Diagram of Create Offering (Admin):
 
-![Communication Diagram of Create Offering](Communication%20Diagram%20Create%20Offering.PNG)   
+![Communication Diagram of Create Offering](Communication%20Diagram%20Create%20Offering.PNG)      
+
+
+Interaction Diagram of Book (Client):
+
+![Communication Diagram of Book](Communication%20Diagram%20Book.PNG) 
 
 
 
