@@ -1,6 +1,8 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, IntegerField, BooleanField, DateTimeField, SelectField
 from wtforms.validators import DataRequired, Length, EqualTo, ValidationError, NumberRange
+from models import Location
+
 
 # Login Form Definition
 class LoginForm(FlaskForm):
@@ -62,13 +64,18 @@ class ClientRegistrationForm(FlaskForm):
 
 
 class OfferingForm(FlaskForm):
-    lesson_type = StringField('Lesson Type', validators=[DataRequired()])
-    offering_type = SelectField('Offering Type', choices=[('Group', 'Group'), ('Private', 'Private')])
-    location_id = IntegerField('Location ID', validators=[DataRequired()])
-    start_time = DateTimeField('Start Time', format='%Y-%m-%d %H:%M', validators=[DataRequired()])
-    end_time = DateTimeField('End Time', format='%Y-%m-%d %H:%M', validators=[DataRequired()])
-    maximum_capacity = IntegerField('Maximum Capacity', validators=[NumberRange(min=1, message="Capacity must be at least 1")])
+    lesson_type = StringField('Lesson Type', validators=[DataRequired(), Length(min=2, max=50)])
+    offering_type = SelectField('Offering Type', choices=[('Group', 'Group'), ('Private', 'Private')], validators=[DataRequired()])
+    location = SelectField('Location', coerce=int, validators=[DataRequired()])
+    start_time = DateTimeField('Start Time', format='%Y-%m-%dT%H:%M', validators=[DataRequired()])
+    end_time = DateTimeField('End Time', format='%Y-%m-%dT%H:%M', validators=[DataRequired()])
+    maximum_capacity = IntegerField('Maximum Capacity', validators=[DataRequired()])
     submit = SubmitField('Create Offering')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Populate location choices from the database
+        self.location.choices = [(location.id, f"{location.name} - {location.city}") for location in Location.query.all()]
 
 
 

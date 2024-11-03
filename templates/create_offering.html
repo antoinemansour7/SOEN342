@@ -18,7 +18,7 @@
 <body>
     <div class="form-container">
         <h2>Create Offering</h2>
-        <form method="POST" action="">
+        <form method="POST" action="{{ url_for('create_offering') }}">
             {{ form.hidden_tag() }}
             <div>
                 {{ form.lesson_type.label }}<br>
@@ -30,7 +30,7 @@
             </div>
             <div>
                 {{ form.location.label }}<br>
-                {{ form.location(size=30) }}<br>
+                {{ form.location() }}<br>
             </div>
             <div>
                 {{ form.start_time.label }}<br>
@@ -50,6 +50,14 @@
                 {{ form.submit() }}
             </div>
         </form>
+
+        {% for field, errors in form.errors.items() %}
+        {% for error in errors %}
+            <p style="color: red;">{{ error }}</p>
+        {% endfor %}
+    {% endfor %}
+    
+
     </div>
 </body>
 </html>

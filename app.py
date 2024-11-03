@@ -101,22 +101,34 @@ def login():
 @app.route('/create_offering', methods=['GET', 'POST'])
 @login_required
 def create_offering():
+    if not isinstance(current_user, Admin):  # Ensure only the admin can create offerings
+        flash('You do not have permission to access this page.', 'danger')
+        return redirect(url_for('index'))
+
     form = OfferingForm()
+
+    # Process form submission
     if form.validate_on_submit():
-        # Gather data from the form
+        # Create a new Offering object with a default offering_type and no instructor initially
         new_offering = Offering(
             lesson_type=form.lesson_type.data,
-            location_id=form.location_id.data,
+            location_id=form.location.data,
             start_time=form.start_time.data,
             end_time=form.end_time.data,
             maximum_capacity=form.maximum_capacity.data,
-            instructor_id=current_user.id  # Ensure current user is the admin or an instructor
+            offering_type=form.offering_type.data or "General"  # Default if not specified
+            # instructor_id remains None for later assignment
         )
+        
+        # Add the new offering to the database
         db.session.add(new_offering)
         db.session.commit()
+        
         flash('Offering created successfully!', 'success')
         return redirect(url_for('index'))
+
     return render_template('create_offering.html', form=form)
+
 
 
 
