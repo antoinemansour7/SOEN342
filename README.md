@@ -123,7 +123,12 @@ Interaction Diagram of Create Offering (Admin):
 
 Interaction Diagram of Book (Client):
 
-![Communication Diagram of Book](Communication%20Diagram%20Book.PNG) 
+![Communication Diagram of Book](Communication%20Diagram%20Book.PNG)    
+
+
+Interaction Diagram of Accept Offering (Instructor):
+
+![Communication Diagram of Accept Offering](Communication%20Diagram%20Accept%20Offering.PNG)
 
 
 
