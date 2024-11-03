@@ -2,7 +2,7 @@ from flask import Flask, render_template, redirect, url_for, flash, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, login_user, current_user, logout_user, login_required
-from models import db, User, Offering  # Correct import of db
+from models import *  # Correct import of db
 from forms import LoginForm, RegistrationForm, OfferingForm
 from flask_migrate import Migrate
 
@@ -22,7 +22,7 @@ login_manager.login_view = 'login'
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.get(int(user_id))
+    return Client.query.get(int(user_id))
 
 @app.route('/')
 def index():
