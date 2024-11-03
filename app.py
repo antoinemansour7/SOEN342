@@ -118,25 +118,25 @@ def create_offering():
         return redirect(url_for('index'))
     return render_template('create_offering.html', form=form)
 
+
+
 @app.route('/create_location', methods=['GET', 'POST'])
 @login_required
 def create_location():
-    if not current_user.is_authenticated or current_user.role != 'admin':
-        flash('You do not have permission to access this page.', 'danger')
+    # Check if the current user is an admin based on class
+    if not current_user.is_authenticated or current_user.__class__.__name__ != 'Admin':
+        flash("You do not have permission to access this page.", "danger")
         return redirect(url_for('index'))
 
     form = LocationForm()
     if form.validate_on_submit():
-        # Create new location with form data
-        new_location = Location(
-            city=form.city.data,
-            address=form.address.data,
-            name=form.name.data
-        )
-        db.session.add(new_location)
+        # Create a new location
+        location = Location(city=form.city.data, address=form.address.data, name=form.name.data)
+        db.session.add(location)
         db.session.commit()
-        flash('Location created successfully!', 'success')
+        flash("Location created successfully!", "success")
         return redirect(url_for('index'))
+
     return render_template('create_location.html', form=form)
 
 
