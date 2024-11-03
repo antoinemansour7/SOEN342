@@ -171,8 +171,7 @@ class Location(db.Model):
         return f"Location('{self.name}', '{self.city}', '{self.address}')"
 
 
-from flask_login import UserMixin
-from app import db
+
 
 class Admin(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)

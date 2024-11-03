@@ -1,7 +1,7 @@
 from flask import Flask, render_template, redirect, url_for, flash, request
 from extensions import db, bcrypt, login_manager  # Import extensions
 from flask_migrate import Migrate
-from forms import LoginForm, ClientRegistrationForm, InstructorRegistrationForm
+from forms import LoginForm, ClientRegistrationForm, InstructorRegistrationForm, OfferingForm, LocationForm
 from models import *
 from flask_login import LoginManager, login_user, current_user, logout_user, login_required
 
@@ -97,6 +97,47 @@ def login():
     return render_template('login.html', form=form)
 
 
+
+@app.route('/create_offering', methods=['GET', 'POST'])
+@login_required
+def create_offering():
+    form = OfferingForm()
+    if form.validate_on_submit():
+        # Gather data from the form
+        new_offering = Offering(
+            lesson_type=form.lesson_type.data,
+            location_id=form.location_id.data,
+            start_time=form.start_time.data,
+            end_time=form.end_time.data,
+            maximum_capacity=form.maximum_capacity.data,
+            instructor_id=current_user.id  # Ensure current user is the admin or an instructor
+        )
+        db.session.add(new_offering)
+        db.session.commit()
+        flash('Offering created successfully!', 'success')
+        return redirect(url_for('index'))
+    return render_template('create_offering.html', form=form)
+
+@app.route('/create_location', methods=['GET', 'POST'])
+@login_required
+def create_location():
+    if not current_user.is_authenticated or current_user.role != 'admin':
+        flash('You do not have permission to access this page.', 'danger')
+        return redirect(url_for('index'))
+
+    form = LocationForm()
+    if form.validate_on_submit():
+        # Create new location with form data
+        new_location = Location(
+            city=form.city.data,
+            address=form.address.data,
+            name=form.name.data
+        )
+        db.session.add(new_location)
+        db.session.commit()
+        flash('Location created successfully!', 'success')
+        return redirect(url_for('index'))
+    return render_template('create_location.html', form=form)
 
 
 @app.route('/logout')

@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, IntegerField, BooleanField
+from wtforms import StringField, PasswordField, SubmitField, IntegerField, BooleanField, DateTimeField, SelectField
 from wtforms.validators import DataRequired, Length, EqualTo, ValidationError, NumberRange
 
 # Login Form Definition
@@ -58,3 +58,22 @@ class ClientRegistrationForm(FlaskForm):
     def validate_child_relation(self, child_relation):
         if self.add_child.data and not child_relation.data:
             raise ValidationError('Child relation is required if adding a child.')
+
+
+
+class OfferingForm(FlaskForm):
+    lesson_type = StringField('Lesson Type', validators=[DataRequired()])
+    offering_type = SelectField('Offering Type', choices=[('Group', 'Group'), ('Private', 'Private')])
+    location_id = IntegerField('Location ID', validators=[DataRequired()])
+    start_time = DateTimeField('Start Time', format='%Y-%m-%d %H:%M', validators=[DataRequired()])
+    end_time = DateTimeField('End Time', format='%Y-%m-%d %H:%M', validators=[DataRequired()])
+    maximum_capacity = IntegerField('Maximum Capacity', validators=[NumberRange(min=1, message="Capacity must be at least 1")])
+    submit = SubmitField('Create Offering')
+
+
+
+class LocationForm(FlaskForm):
+    city = StringField('City', validators=[DataRequired(), Length(min=2, max=100)])
+    address = StringField('Address', validators=[DataRequired(), Length(min=5, max=255)])
+    name = StringField('Location Name', validators=[DataRequired(), Length(min=2, max=100)])
+    submit = SubmitField('Create Location')

@@ -21,7 +21,8 @@
         <hr class="styled-divider">
 
         <!-- Admin Section (Create Offering) -->
-        {% if current_user.is_authenticated and current_user.role == 'admin' %}
+        {% if current_user.is_authenticated and current_user.__class__.__name__ == 'Admin' %}
+
             <div class="admin-section">
                 <a href="{{ url_for('create_offering') }}" class="form-button">Create Offering</a>
             </div>
@@ -33,7 +34,8 @@
             <ul>
                 {% for offering in offerings %}
                     <li class="offering-card">
-                        {% if current_user.is_authenticated and current_user.role == 'admin' %}
+                        {% if current_user.is_authenticated and current_user.__class__.__name__ == 'Admin' %}
+
                             <a href="{{ url_for('view_offering', offering_id=offering.id) }}" class="offering-link">
                                 <h3>{{ offering.lesson_type }} at {{ offering.location }}</h3>
                                 <p class="time-slot">

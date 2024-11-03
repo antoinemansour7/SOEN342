@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <title>Create Location</title>
+</head>
+<body>
+    <div class="form-container">
+        <h2>Create Location</h2>
+        <form method="POST" action="">
+            {{ form.hidden_tag() }}
+            <div>
+                {{ form.city.label }}<br>
+                {{ form.city(size=30) }}<br>
+            </div>
+            <div>
+                {{ form.address.label }}<br>
+                {{ form.address(size=50) }}<br>
+            </div>
+            <div>
+                {{ form.name.label }}<br>
+                {{ form.name(size=30) }}<br>
+            </div>
+            <div>
+                {{ form.submit() }}
+            </div>
+        </form>
+    </div>
+</body>
+</html>
