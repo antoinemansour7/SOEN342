@@ -18,7 +18,12 @@ login_manager.login_view = 'login'
 
 @login_manager.user_loader
 def load_user(user_id):
-    return Client.query.get(int(user_id))
+    # Attempt to load the user as a Client first
+    user = Client.query.get(int(user_id))
+    if not user:
+        # If not found as Client, attempt to load as Instructor
+        user = Instructor.query.get(int(user_id))
+    return user
 
 # Main route for index
 @app.route('/')
@@ -70,18 +75,17 @@ def register_instructor():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    # Redirect if user is already logged in
     if current_user.is_authenticated:
         return redirect(url_for('index'))
 
     form = LoginForm()
     if form.validate_on_submit():
-        # Check for both Client and Instructor with provided username
+        # Attempt to find user in both Client and Instructor models
         user = Client.query.filter_by(username=form.username.data).first()
         if not user:
             user = Instructor.query.filter_by(username=form.username.data).first()
         
-        # If user exists and password matches, log them in
+        # Check password and log in if valid
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user)
             flash(f"Welcome back, {user.username}!", 'success')
@@ -90,6 +94,7 @@ def login():
             flash('Login Unsuccessful. Please check username and password.', 'danger')
 
     return render_template('login.html', form=form)
+
 
 @app.route('/logout')
 def logout():

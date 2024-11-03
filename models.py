@@ -96,7 +96,7 @@ class Client(db.Model, UserMixin):
 
 
 # Instructor model
-class Instructor(db.Model):
+class Instructor(db.Model,UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(150), nullable=False, unique=True)
     specialization = db.Column(db.String(100), nullable=False)  # e.g., "yoga", "swimming"
