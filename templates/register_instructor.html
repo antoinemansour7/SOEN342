@@ -9,24 +9,50 @@
         <h2>Instructor Registration</h2>
         <form method="POST" action="{{ url_for('register_instructor') }}">
             {{ form.hidden_tag() }}
+            
             <div class="form-group">
                 {{ form.username.label }} {{ form.username(class="form-input") }}
+                {% for error in form.username.errors %}
+                    <span class="error">{{ error }}</span>
+                {% endfor %}
             </div>
+
             <div class="form-group">
-                {{ form.specialization.label }} {{ form.specialization(class="form-input") }}
+                {{ form.phone.label }} {{ form.phone(class="form-input") }}
+                {% for error in form.phone.errors %}
+                    <span class="error">{{ error }}</span>
+                {% endfor %}
             </div>
+
             <div class="form-group">
                 {{ form.password.label }} {{ form.password(class="form-input") }}
+                {% for error in form.password.errors %}
+                    <span class="error">{{ error }}</span>
+                {% endfor %}
             </div>
             <div class="form-group">
                 {{ form.confirm_password.label }} {{ form.confirm_password(class="form-input") }}
+                {% for error in form.confirm_password.errors %}
+                    <span class="error">{{ error }}</span>
+                {% endfor %}
             </div>
+
+
             <div class="form-group">
-                {{ form.phone.label }} {{ form.phone(class="form-input") }}
+                {{ form.specialization.label }} {{ form.specialization(class="form-input") }}
+                {% for error in form.specialization.errors %}
+                    <span class="error">{{ error }}</span>
+                {% endfor %}
             </div>
+           
+        
             <div class="form-group">
                 {{ form.city.label }} {{ form.city(class="form-input") }}
+                {% for error in form.city.errors %}
+                    <span class="error">{{ error }}</span>
+                {% endfor %}
             </div>
+
             <button type="submit" class="form-button">Register</button>
         </form>
     </div>

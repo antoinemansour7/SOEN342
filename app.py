@@ -70,9 +70,32 @@ def register_instructor():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    # Redirect if user is already logged in
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+
     form = LoginForm()
-    # (additional login logic here)
+    if form.validate_on_submit():
+        # Check for both Client and Instructor with provided username
+        user = Client.query.filter_by(username=form.username.data).first()
+        if not user:
+            user = Instructor.query.filter_by(username=form.username.data).first()
+        
+        # If user exists and password matches, log them in
+        if user and bcrypt.check_password_hash(user.password, form.password.data):
+            login_user(user)
+            flash(f"Welcome back, {user.username}!", 'success')
+            return redirect(url_for('index'))
+        else:
+            flash('Login Unsuccessful. Please check username and password.', 'danger')
+
     return render_template('login.html', form=form)
+
+@app.route('/logout')
+def logout():
+    logout_user()
+    flash('You have been logged out successfully.', 'info')
+    return redirect(url_for('index'))
 
 
 

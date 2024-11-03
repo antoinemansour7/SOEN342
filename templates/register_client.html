@@ -4,7 +4,6 @@
     <title>Register as Client</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <script>
-        // JavaScript to toggle child fields based on checkbox
         function toggleChildFields() {
             const addChildCheckbox = document.getElementById('add_child');
             const childFields = document.getElementById('child-fields');
@@ -18,46 +17,69 @@
         <form method="POST" action="{{ url_for('register_client') }}">
             {{ form.hidden_tag() }}
             
-            <!-- Client Information Fields -->
             <div class="form-group">
                 {{ form.username.label }} {{ form.username(class="form-input") }}
+                {% for error in form.username.errors %}
+                    <span class="error">{{ error }}</span>
+                {% endfor %}
             </div>
             <div class="form-group">
                 {{ form.name.label }} {{ form.name(class="form-input") }}
+                {% for error in form.name.errors %}
+                    <span class="error">{{ error }}</span>
+                {% endfor %}
             </div>
             <div class="form-group">
                 {{ form.phone.label }} {{ form.phone(class="form-input") }}
+                {% for error in form.phone.errors %}
+                    <span class="error">{{ error }}</span>
+                {% endfor %}
             </div>
             <div class="form-group">
                 {{ form.password.label }} {{ form.password(class="form-input") }}
+                {% for error in form.password.errors %}
+                    <span class="error">{{ error }}</span>
+                {% endfor %}
             </div>
             <div class="form-group">
                 {{ form.confirm_password.label }} {{ form.confirm_password(class="form-input") }}
+                {% for error in form.confirm_password.errors %}
+                    <span class="error">{{ error }}</span>
+                {% endfor %}
             </div>
             <div class="form-group">
                 {{ form.age.label }} {{ form.age(class="form-input") }}
+                {% for error in form.age.errors %}
+                    <span class="error">{{ error }}</span>
+                {% endfor %}
             </div>
 
-            <!-- Checkbox to Add Child -->
             <div class="form-group">
                 {{ form.add_child.label }} {{ form.add_child(id="add_child", onclick="toggleChildFields()") }}
             </div>
 
-            <!-- Child Information Fields (Initially Hidden) -->
             <div id="child-fields" style="display: none;">
                 <h3>Child Information</h3>
                 <div class="form-group">
                     {{ form.child_name.label }} {{ form.child_name(class="form-input") }}
+                    {% for error in form.child_name.errors %}
+                        <span class="error">{{ error }}</span>
+                    {% endfor %}
                 </div>
                 <div class="form-group">
                     {{ form.child_age.label }} {{ form.child_age(class="form-input") }}
+                    {% for error in form.child_age.errors %}
+                        <span class="error">{{ error }}</span>
+                    {% endfor %}
                 </div>
                 <div class="form-group">
                     {{ form.child_relation.label }} {{ form.child_relation(class="form-input") }}
+                    {% for error in form.child_relation.errors %}
+                        <span class="error">{{ error }}</span>
+                    {% endfor %}
                 </div>
             </div>
 
-            <!-- Submit Button -->
             <button type="submit" class="form-button">Register</button>
         </form>
     </div>
