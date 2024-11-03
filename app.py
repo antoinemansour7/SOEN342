@@ -123,11 +123,15 @@ def create_offering():
         # Add the new offering to the database
         db.session.add(new_offering)
         db.session.commit()
-        
+
+        # Add the offering to OfferingsCatalog
+        OfferingsCatalog.offerings.append(new_offering)
+
         flash('Offering created successfully!', 'success')
         return redirect(url_for('index'))
 
     return render_template('create_offering.html', form=form)
+
 
 
 

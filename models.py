@@ -9,7 +9,10 @@ class OfferingsCatalog:
 
     @classmethod
     def get_all_offerings(cls):
-        return cls.offerings
+        try:
+            return Offering.query.all()  # Fetch directly from the database if in app context
+        except RuntimeError:
+            return cls.offerings  # Fallback to the in-memory list if outside app context
 
 
 class InstructorsCatalog:
@@ -17,7 +20,10 @@ class InstructorsCatalog:
 
     @classmethod
     def get_all_instructors(cls):
-        return cls.instructors
+        try:
+            return Instructor.query.all()
+        except RuntimeError:
+            return cls.instructors
 
 
 class LocationsCatalog:
@@ -25,7 +31,10 @@ class LocationsCatalog:
 
     @classmethod
     def get_all_locations(cls):
-        return cls.locations
+        try:
+            return Location.query.all()
+        except RuntimeError:
+            return cls.locations
 
 
 class BookingsCatalog:
@@ -33,7 +42,10 @@ class BookingsCatalog:
 
     @classmethod
     def get_all_bookings(cls):
-        return cls.bookings
+        try:
+            return Booking.query.all()
+        except RuntimeError:
+            return cls.bookings
 
 
 
