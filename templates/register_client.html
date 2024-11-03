@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Register as Client</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script>
+        // JavaScript to toggle child fields based on checkbox
+        function toggleChildFields() {
+            const addChildCheckbox = document.getElementById('add_child');
+            const childFields = document.getElementById('child-fields');
+            childFields.style.display = addChildCheckbox.checked ? 'block' : 'none';
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h2>Client Registration</h2>
+        <form method="POST" action="{{ url_for('register_client') }}">
+            {{ form.hidden_tag() }}
+            
+            <!-- Client Information Fields -->
+            <div class="form-group">
+                {{ form.username.label }} {{ form.username(class="form-input") }}
+            </div>
+            <div class="form-group">
+                {{ form.name.label }} {{ form.name(class="form-input") }}
+            </div>
+            <div class="form-group">
+                {{ form.phone.label }} {{ form.phone(class="form-input") }}
+            </div>
+            <div class="form-group">
+                {{ form.password.label }} {{ form.password(class="form-input") }}
+            </div>
+            <div class="form-group">
+                {{ form.confirm_password.label }} {{ form.confirm_password(class="form-input") }}
+            </div>
+            <div class="form-group">
+                {{ form.age.label }} {{ form.age(class="form-input") }}
+            </div>
+
+            <!-- Checkbox to Add Child -->
+            <div class="form-group">
+                {{ form.add_child.label }} {{ form.add_child(id="add_child", onclick="toggleChildFields()") }}
+            </div>
+
+            <!-- Child Information Fields (Initially Hidden) -->
+            <div id="child-fields" style="display: none;">
+                <h3>Child Information</h3>
+                <div class="form-group">
+                    {{ form.child_name.label }} {{ form.child_name(class="form-input") }}
+                </div>
+                <div class="form-group">
+                    {{ form.child_age.label }} {{ form.child_age(class="form-input") }}
+                </div>
+                <div class="form-group">
+                    {{ form.child_relation.label }} {{ form.child_relation(class="form-input") }}
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="form-button">Register</button>
+        </form>
+    </div>
+</body>
+</html>

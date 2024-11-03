@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Register as Instructor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h2>Instructor Registration</h2>
+        <form method="POST" action="{{ url_for('register_instructor') }}">
+            {{ form.hidden_tag() }}
+            <div class="form-group">
+                {{ form.username.label }} {{ form.username(class="form-input") }}
+            </div>
+            <div class="form-group">
+                {{ form.specialization.label }} {{ form.specialization(class="form-input") }}
+            </div>
+            <div class="form-group">
+                {{ form.password.label }} {{ form.password(class="form-input") }}
+            </div>
+            <div class="form-group">
+                {{ form.confirm_password.label }} {{ form.confirm_password(class="form-input") }}
+            </div>
+            <div class="form-group">
+                {{ form.phone.label }} {{ form.phone(class="form-input") }}
+            </div>
+            <div class="form-group">
+                {{ form.city.label }} {{ form.city(class="form-input") }}
+            </div>
+            <button type="submit" class="form-button">Register</button>
+        </form>
+    </div>
+</body>
+</html>

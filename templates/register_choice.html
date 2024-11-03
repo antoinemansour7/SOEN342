@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Choose Registration Type</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h2>Register as:</h2>
+        <div class="button-group">
+            <a href="{{ url_for('register_client') }}" class="form-button">Client</a>
+            <a href="{{ url_for('register_instructor') }}" class="form-button">Instructor</a>
+        </div>
+    </div>
+</body>
+</html>
