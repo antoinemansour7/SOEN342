@@ -1,4 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
+from abc import ABC, abstractmethod
 from flask_login import UserMixin
 
 db = SQLAlchemy()
@@ -169,3 +170,15 @@ class Location(db.Model):
 
     def __repr__(self):
         return f"Location('{self.name}', '{self.city}', '{self.address}')"
+
+
+class Admin:
+    organisation = "Unified Learning Solutions"  # Organization name
+    username = "admin"
+    password = "adminaccount"
+
+    def __repr__(self):
+        return f"Admin(Organisation: {self.organisation})"
+
+
+
