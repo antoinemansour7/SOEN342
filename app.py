@@ -56,27 +56,48 @@ def index():
 def register():
     return render_template('register_choice.html')  # New template to choose registration type
 
+
 # Register client route
 @app.route('/register_client', methods=['GET', 'POST'])
 def register_client():
     if current_user.is_authenticated:
         return redirect(url_for('index'))
+    
     form = ClientRegistrationForm()
+    
     if form.validate_on_submit():
+        # Hash the password and create a new Client instance
         hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
-        client = Client(username=form.username.data, name=form.name.data, phone=form.phone.data, password=hashed_password, age=form.age.data)
+        client = Client(
+            username=form.username.data, 
+            name=form.name.data, 
+            phone=form.phone.data, 
+            password=hashed_password, 
+            age=form.age.data
+        )
+        
+        # Add and commit the client to the database
         db.session.add(client)
         db.session.commit()
 
-        # If add_child checkbox is selected, create a Child instance
+        # If the add_child checkbox is selected, process child information
         if form.add_child.data:
-            child = Child(name=form.child_name.data, age=form.child_age.data, relation=form.child_relation.data, guardian_id=client.id)
-            db.session.add(child)
-            db.session.commit()
-
+            # Only proceed if child fields pass validation and contain data
+            if form.child_name.data and form.child_age.data and form.child_relation.data:
+                child = Child(
+                    name=form.child_name.data, 
+                    age=form.child_age.data, 
+                    relation=form.child_relation.data, 
+                    guardian_id=client.id
+                )
+                db.session.add(child)
+                db.session.commit()
+        
         flash('Your client account has been created!', 'success')
         return redirect(url_for('login'))
+    
     return render_template('register_client.html', form=form)
+
 
 
 

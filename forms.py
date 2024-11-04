@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, IntegerField, BooleanField, DateTimeField, SelectField
-from wtforms.validators import DataRequired, Length, EqualTo, ValidationError, NumberRange
+from wtforms.validators import DataRequired, Length, EqualTo, ValidationError, NumberRange, Optional
 from models import Location
 
 
@@ -30,13 +30,14 @@ class ClientRegistrationForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired(), Length(min=2, max=150)])
     password = PasswordField('Password', validators=[DataRequired()])
     confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password')])
-    phone = StringField('Phone', validators=[Length(min=10, max=15)])
+    phone = StringField('Phone', validators=[Optional(), Length(min=10, max=15)])
     age = IntegerField('Age', validators=[DataRequired(), NumberRange(min=1, max=120, message="Age must be between 1 and 120.")])
 
     add_child = BooleanField('Add Child')
-    child_name = StringField('Child Name')
-    child_age = IntegerField('Child Age', validators=[NumberRange(min=0, max=17, message="Child age must be between 0 and 17.")])
-    child_relation = StringField('Relation to Child', validators=[Length(max=50)])
+    # Make child fields optional but validate conditionally in custom methods
+    child_name = StringField('Child Name', validators=[Optional()])
+    child_age = IntegerField('Child Age', validators=[Optional(), NumberRange(min=0, max=17, message="Child age must be between 0 and 17.")])
+    child_relation = StringField('Relation to Child', validators=[Optional(), Length(max=50)])
     submit = SubmitField('Register as Client')
 
     def validate_username(self, username):
@@ -49,6 +50,7 @@ class ClientRegistrationForm(FlaskForm):
         if age.data < 18:
             raise ValidationError('Clients must be at least 18 years old. Please register the individual as a child instead.')
 
+    # Conditional validation for child fields based on 'add_child' checkbox
     def validate_child_name(self, child_name):
         if self.add_child.data and not child_name.data:
             raise ValidationError('Child name is required if adding a child.')
