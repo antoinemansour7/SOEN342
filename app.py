@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, flash, request
+from flask import Flask, render_template, redirect, url_for, flash, request, session
 from extensions import db, bcrypt, login_manager  # Import extensions
 from flask_migrate import Migrate
 from forms import LoginForm, ClientRegistrationForm, InstructorRegistrationForm, OfferingForm, LocationForm
@@ -22,20 +22,30 @@ login_manager.login_view = 'login'
 
 @login_manager.user_loader
 def load_user(user_id):
-    # Check if user is Client, Instructor, or Admin
-    user = Client.query.get(int(user_id)) or Instructor.query.get(int(user_id)) or Admin.query.get(int(user_id))
-    return user
+    user_role = session.get('role')
+    
+    if user_role == "admin":
+        return Admin.query.get(int(user_id))
+    elif user_role == "instructor":
+        return Instructor.query.get(int(user_id))
+    elif user_role == "client":
+        return Client.query.get(int(user_id))
+    return None
+
+
 
 
 @app.route('/')
 def index():
     assigned_offerings = Offering.query.filter_by(is_assigned=True).all()
     unassigned_offerings = []
-
-    if current_user.is_authenticated and (isinstance(current_user, Admin) or isinstance(current_user, Instructor)):
+    
+    # Show unassigned offerings only for Admin or Instructor
+    if current_user.is_authenticated and session.get('role') in ["admin", "instructor"]:
         unassigned_offerings = Offering.query.filter_by(is_assigned=False).all()
 
     return render_template('index.html', assigned_offerings=assigned_offerings, unassigned_offerings=unassigned_offerings)
+
 
 
 
@@ -85,24 +95,31 @@ def register_instructor():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    if current_user.is_authenticated:
-        return redirect(url_for('index'))
-
-    form = LoginForm()
+    form = LoginForm()  # Assuming LoginForm is your form class
     if form.validate_on_submit():
-        # Check Client, Instructor, and Admin for the user
-        user = (Client.query.filter_by(username=form.username.data).first() or
-                Instructor.query.filter_by(username=form.username.data).first() or
-                Admin.query.filter_by(username=form.username.data).first())
-
+        # Try to find the user in each role type
+        user = Admin.query.filter_by(username=form.username.data).first() or \
+               Instructor.query.filter_by(username=form.username.data).first() or \
+               Client.query.filter_by(username=form.username.data).first()
+        
         if user and bcrypt.check_password_hash(user.password, form.password.data):
+            # Set the role in the session for load_user to reference
+            if isinstance(user, Admin):
+                session['role'] = 'admin'
+            elif isinstance(user, Instructor):
+                session['role'] = 'instructor'
+            elif isinstance(user, Client):
+                session['role'] = 'client'
+                
             login_user(user)
-            flash(f"Welcome back, {user.username}!", 'success')
+            flash('Logged in successfully!', 'success')
             return redirect(url_for('index'))
         else:
-            flash('Login Unsuccessful. Please check username and password.', 'danger')
-
+            flash('Login unsuccessful. Please check username and password.', 'danger')
     return render_template('login.html', form=form)
+
+
+
 
 
 

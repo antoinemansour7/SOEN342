@@ -71,6 +71,7 @@ class Client(db.Model, UserMixin):
     phone = db.Column(db.String(15), nullable=True)
     password = db.Column(db.String(150), nullable=False)
     age = db.Column(db.String(10), nullable=False)
+    role = db.Column(db.String(50), default="client")
 
     # Relationships
     children = db.relationship('Child', backref='guardian', lazy=True)
@@ -88,6 +89,7 @@ class Instructor(db.Model,UserMixin):
     password = db.Column(db.String(150), nullable=False)
     phone = db.Column(db.String(15), nullable=True)
     city = db.Column(db.String(100), nullable=False)
+    role = db.Column(db.String(50), default="instructor")
 
     # Relationship with Offering
     offerings = db.relationship('Offering', backref='instructor', lazy=True)
@@ -185,6 +187,7 @@ class Admin(db.Model, UserMixin):
     organisation = db.Column(db.String(100), nullable=False, default="Unified Learning Solutions")
     username = db.Column(db.String(150), nullable=False, unique=True, default="admin")
     password = db.Column(db.String(150), nullable=False, default="adminaccount")
+    role = db.Column(db.String(50), default="admin")
 
     def __init__(self, username="admin", password="adminaccount", organisation="Unified Learning Solutions"):
         self.username = username
