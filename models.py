@@ -142,11 +142,12 @@ class Offering(db.Model):
     available_spots = db.Column(db.Integer, nullable=False, default=0)
     offering_type = db.Column(db.String(20), nullable=False, default="General")
     instructor_id = db.Column(db.Integer, db.ForeignKey('instructor.id'), nullable=True)
+    is_assigned = db.Column(db.Boolean, default=False)  # Track if offering is assigned
 
-    # Define the bookings relationship
+    # Relationships
     bookings = db.relationship('Booking', back_populates='offering')
 
-    def __init__(self, lesson_type, location_id, start_time, end_time, maximum_capacity, offering_type="General", instructor_id=None):
+    def __init__(self, lesson_type, location_id, start_time, end_time, maximum_capacity, offering_type="General"):
         self.lesson_type = lesson_type
         self.location_id = location_id
         self.start_time = start_time
@@ -154,10 +155,7 @@ class Offering(db.Model):
         self.maximum_capacity = maximum_capacity
         self.available_spots = maximum_capacity
         self.offering_type = offering_type
-        self.instructor_id = instructor_id
 
-    def __repr__(self):
-        return f"Offering('{self.lesson_type}', 'Location ID: {self.location_id}', 'Start: {self.start_time}', 'End: {self.end_time}')"
 
 
 # Location model

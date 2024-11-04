@@ -20,18 +20,24 @@
         <!-- Aesthetic Horizontal Line -->
         <hr class="styled-divider">
 
-        <!-- Admin Section (Create Offering and Location) -->
+        <!-- Admin Section (Create Offering, Location, and Unassigned Offerings) -->
         {% if current_user.is_authenticated and current_user.__class__.__name__ == 'Admin' %}
             <div class="admin-section">
                 <a href="{{ url_for('create_offering') }}" class="form-button">Create Offering</a>
-                <a href="{{ url_for('create_location') }}" class="form-button">Create Location</a> <!-- New button for creating a location -->
+                <a href="{{ url_for('create_location') }}" class="form-button">Create Location</a>
+                <a href="{{ url_for('unassigned_offerings') }}" class="form-button">View Unassigned Offerings</a>
+            </div>
+        {% elif current_user.is_authenticated and current_user.__class__.__name__ == 'Instructor' %}
+            <div class="instructor-section">
+                <a href="{{ url_for('unassigned_offerings') }}" class="form-button">View Unassigned Offerings</a>
             </div>
         {% endif %}
 
+        <!-- Bottom Section (Available Offerings) -->
         <div class="bottom-section">
             <h2>Available Offerings</h2>
             <ul>
-                {% for offering in offerings %}
+                {% for offering in assigned_offerings %}
                     <li class="offering-card">
                         <h3>{{ offering.lesson_type }} at {{ offering.location.name }}</h3>
                         <p class="time-slot">
@@ -40,7 +46,6 @@
                         <p class="spots-available">
                             Available spots: <span>{{ offering.available_spots }} / {{ offering.maximum_capacity }}</span>
                         </p>
-        
                         <!-- Check if the offering is available -->
                         {% if offering.available_spots == 0 %}
                             <p class="unavailable-text">Not Available</p>

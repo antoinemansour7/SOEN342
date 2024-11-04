@@ -27,11 +27,19 @@ def load_user(user_id):
     return user
 
 
-# Main route for index
 @app.route('/')
 def index():
-    offerings = Offering.query.all()
-    return render_template('index.html', offerings=offerings)
+    assigned_offerings = Offering.query.filter_by(is_assigned=True).all()
+    unassigned_offerings = []
+
+    if current_user.is_authenticated and (isinstance(current_user, Admin) or isinstance(current_user, Instructor)):
+        unassigned_offerings = Offering.query.filter_by(is_assigned=False).all()
+
+    return render_template('index.html', assigned_offerings=assigned_offerings, unassigned_offerings=unassigned_offerings)
+
+
+
+
 
 # Register choice route
 @app.route('/register')
@@ -160,6 +168,38 @@ def create_location():
 def logout():
     logout_user()
     flash('You have been logged out successfully.', 'info')
+    return redirect(url_for('index'))
+
+@app.route('/unassigned_offerings')
+@login_required
+def unassigned_offerings():
+    if not (isinstance(current_user, Admin) or isinstance(current_user, Instructor)):
+        flash('Access restricted to Admins and Instructors.', 'danger')
+        return redirect(url_for('index'))
+
+    offerings = Offering.query.filter_by(is_assigned=False).all()
+    return render_template('unassigned_offerings.html', offerings=offerings)
+
+
+
+@app.route('/claim_offering/<int:offering_id>', methods=['POST'])
+@login_required
+def claim_offering(offering_id):
+    if not isinstance(current_user, Instructor):
+        flash('Only instructors can claim offerings.', 'danger')
+        return redirect(url_for('index'))
+
+    offering = Offering.query.get_or_404(offering_id)
+    if offering.is_assigned:
+        flash('This offering has already been claimed.', 'warning')
+        return redirect(url_for('unassigned_offerings'))
+
+    # Assign the offering to the instructor and mark it as assigned
+    offering.instructor_id = current_user.id
+    offering.is_assigned = True
+    db.session.commit()
+
+    flash('Offering successfully claimed!', 'success')
     return redirect(url_for('index'))
 
 
