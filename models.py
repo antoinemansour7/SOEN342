@@ -77,7 +77,9 @@ class Client(db.Model, UserMixin):
     role = db.Column(db.String(50), default="client")
 
     # Relationships
-    children = db.relationship('Child', backref='guardian', lazy=True)
+    children = db.relationship(
+        'Child', backref='guardian', lazy=True, cascade="all, delete-orphan"
+    )
     bookings = db.relationship('Booking', back_populates='client', lazy=True)
     offerings = db.relationship('Offering', secondary=attendees_table, back_populates='attendees')
 
