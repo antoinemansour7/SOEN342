@@ -336,19 +336,33 @@ def delete_user(user_id, user_type):
         flash('Only admins can delete users.', 'danger')
         return redirect(url_for('index'))
     
-    # Delete user based on type
     if user_type == 'client':
         user = Client.query.get_or_404(user_id)
+        
+        # Update available spots for each offering the client was attending
+        for booking in user.bookings:
+            offering = booking.offering
+            if offering.available_spots < offering.maximum_capacity:
+                offering.available_spots += 1
+            db.session.delete(booking)  # Remove the booking record
+
     elif user_type == 'instructor':
         user = Instructor.query.get_or_404(user_id)
+        
+        # Unassign all offerings taught by this instructor
+        for offering in user.offerings:
+            offering.instructor_id = None  # Unassign instructor
+            offering.is_assigned = False
+
     else:
         flash('Invalid user type specified.', 'danger')
         return redirect(url_for('manage_users'))
-    
+
     db.session.delete(user)
     db.session.commit()
     flash(f'{user_type.capitalize()} account deleted successfully!', 'success')
     return redirect(url_for('manage_users'))
+
 
 
 
