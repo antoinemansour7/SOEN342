@@ -78,6 +78,9 @@ def register_client():
         return redirect(url_for('login'))
     return render_template('register_client.html', form=form)
 
+
+
+
 # Register instructor route
 @app.route('/register_instructor', methods=['GET', 'POST'])
 def register_instructor():
@@ -217,6 +220,33 @@ def claim_offering(offering_id):
     db.session.commit()
 
     flash('Offering successfully claimed!', 'success')
+    return redirect(url_for('index'))
+
+
+@app.route('/attend_offering/<int:offering_id>', methods=['POST'])
+@login_required
+def attend_offering(offering_id):
+    # Ensure the user is a client
+    if not isinstance(current_user, Client):
+        flash('Only clients can attend offerings.', 'danger')
+        return redirect(url_for('index'))
+    
+    # Fetch the offering
+    offering = Offering.query.get_or_404(offering_id)
+    
+    # Check if there are available spots and if the client is not already an attendee
+    if offering.available_spots > 0:
+        if current_user not in offering.attendees:
+            # Add client to attendees and decrement available spots
+            offering.attendees.append(current_user)
+            offering.available_spots -= 1  # Decrement available spots
+            db.session.commit()
+            flash('You are now attending this offering!', 'success')
+        else:
+            flash('You are already attending this offering.', 'info')
+    else:
+        flash('Sorry, no available spots left for this offering.', 'danger')
+    
     return redirect(url_for('index'))
 
 

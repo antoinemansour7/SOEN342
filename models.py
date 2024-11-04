@@ -1,7 +1,10 @@
 from extensions import db  # Import db from extensions
 from flask_login import UserMixin
 
-
+attendees_table = db.Table('attendees',
+    db.Column('client_id', db.Integer, db.ForeignKey('client.id'), primary_key=True),
+    db.Column('offering_id', db.Integer, db.ForeignKey('offering.id'), primary_key=True)
+)
 
 # Catalog classes for each model
 class OfferingsCatalog:
@@ -76,6 +79,8 @@ class Client(db.Model, UserMixin):
     # Relationships
     children = db.relationship('Child', backref='guardian', lazy=True)
     bookings = db.relationship('Booking', back_populates='client', lazy=True)
+    offerings = db.relationship('Offering', secondary=attendees_table, back_populates='attendees')
+
 
     def __repr__(self):
         return f"Client('{self.username}', '{self.name}')"
@@ -121,6 +126,7 @@ class Booking(db.Model):
     # Relationships to Client and Offering
     client = db.relationship('Client', back_populates='bookings')
     offering = db.relationship('Offering', back_populates='bookings')
+   
 
     def __init__(self, client_id, offering_id, lesson_type, start_time, end_time, date):
         self.client_id = client_id
@@ -145,6 +151,7 @@ class Offering(db.Model):
     offering_type = db.Column(db.String(20), nullable=False, default="General")
     instructor_id = db.Column(db.Integer, db.ForeignKey('instructor.id'), nullable=True)
     is_assigned = db.Column(db.Boolean, default=False)  # Track if offering is assigned
+    attendees = db.relationship('Client', secondary=attendees_table, back_populates='offerings')
 
     # Relationships
     bookings = db.relationship('Booking', back_populates='offering')
@@ -196,6 +203,8 @@ class Admin(db.Model, UserMixin):
 
     def __repr__(self):
         return f"Admin(Organisation: {self.organisation})"
+
+
 
 
 

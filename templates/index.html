@@ -46,6 +46,7 @@
                         <p class="spots-available">
                             Available spots: <span>{{ offering.available_spots }} / {{ offering.maximum_capacity }}</span>
                         </p>
+                        
                         <!-- Check if the offering is available -->
                         {% if offering.available_spots == 0 %}
                             <p class="unavailable-text">Not Available</p>
