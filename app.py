@@ -286,7 +286,13 @@ def delete_offering(offering_id):
     db.session.delete(offering)
     db.session.commit()
     flash('Offering deleted successfully!', 'success')
+
+    # Redirect back to the unassigned offerings page if the user came from there
+    if request.referrer and 'unassigned_offerings' in request.referrer:
+        return redirect(url_for('unassigned_offerings'))
+    
     return redirect(url_for('index'))
+
 
 @app.route('/remove_attendee/<int:offering_id>/<int:user_id>', methods=['POST'])
 @login_required
