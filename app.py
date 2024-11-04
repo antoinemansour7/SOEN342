@@ -250,6 +250,50 @@ def attend_offering(offering_id):
     return redirect(url_for('index'))
 
 
+@app.route('/delete_offering/<int:offering_id>', methods=['POST'])
+@login_required
+def delete_offering(offering_id):
+    # Ensure only the admin can delete the offering
+    if current_user.role != 'admin':
+        flash('Only admins can delete offerings.', 'danger')
+        return redirect(url_for('index'))
+    
+    offering = Offering.query.get_or_404(offering_id)
+    db.session.delete(offering)
+    db.session.commit()
+    flash('Offering deleted successfully!', 'success')
+    return redirect(url_for('index'))
+
+@app.route('/remove_attendee/<int:offering_id>/<int:user_id>', methods=['POST'])
+@login_required
+def remove_attendee(offering_id, user_id):
+    # Ensure only the admin can remove attendees
+    if current_user.role != 'admin':
+        flash('Only admins can remove attendees.', 'danger')
+        return redirect(url_for('view_offering', offering_id=offering_id))
+    
+    offering = Offering.query.get_or_404(offering_id)
+    attendee = Client.query.get_or_404(user_id)
+    
+    # Remove attendee and increment available spots
+    if attendee in offering.attendees:
+        offering.attendees.remove(attendee)
+        offering.available_spots += 1
+        db.session.commit()
+        flash('Attendee removed successfully!', 'success')
+    else:
+        flash('Attendee not found in this offering.', 'info')
+
+    return redirect(url_for('view_offering', offering_id=offering_id))
+
+
+
+@app.route('/view_offering/<int:offering_id>')
+@login_required  # Optional, if you want only logged-in users to access this
+def view_offering(offering_id):
+    offering = Offering.query.get_or_404(offering_id)
+    return render_template('view_offering.html', offering=offering)
+
 
 
 if __name__ == "__main__":
