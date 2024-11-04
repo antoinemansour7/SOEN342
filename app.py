@@ -316,6 +316,43 @@ def view_offering(offering_id):
     return render_template('view_offering.html', offering=offering)
 
 
+@app.route('/manage_users')
+@login_required
+def manage_users():
+    if not isinstance(current_user, Admin):
+        flash('Only admins can access this page.', 'danger')
+        return redirect(url_for('index'))
+    
+    # Fetch all clients and instructors
+    clients = Client.query.all()
+    instructors = Instructor.query.all()
+    return render_template('manage_users.html', clients=clients, instructors=instructors)
+
+
+@app.route('/delete_user/<int:user_id>/<user_type>', methods=['POST'])
+@login_required
+def delete_user(user_id, user_type):
+    if not isinstance(current_user, Admin):
+        flash('Only admins can delete users.', 'danger')
+        return redirect(url_for('index'))
+    
+    # Delete user based on type
+    if user_type == 'client':
+        user = Client.query.get_or_404(user_id)
+    elif user_type == 'instructor':
+        user = Instructor.query.get_or_404(user_id)
+    else:
+        flash('Invalid user type specified.', 'danger')
+        return redirect(url_for('manage_users'))
+    
+    db.session.delete(user)
+    db.session.commit()
+    flash(f'{user_type.capitalize()} account deleted successfully!', 'success')
+    return redirect(url_for('manage_users'))
+
+
+
+
 
 if __name__ == "__main__":
     app.run(debug=True)

@@ -26,6 +26,7 @@
                 <a href="{{ url_for('create_offering') }}" class="form-button">Create Offering</a>
                 <a href="{{ url_for('create_location') }}" class="form-button">Create Location</a>
                 <a href="{{ url_for('unassigned_offerings') }}" class="form-button">View Unassigned Offerings</a>
+                <a href="{{ url_for('manage_users') }}" class="form-button">Manage Users</a>
             </div>
         {% elif current_user.is_authenticated and current_user.__class__.__name__ == 'Instructor' %}
             <div class="instructor-section">
