@@ -157,17 +157,22 @@ def create_offering():
 
     # Process form submission
     if form.validate_on_submit():
-        # Create a new Offering object with a default offering_type and no instructor initially
+        # Determine maximum capacity: default to 1 for private offerings
+        maximum_capacity = form.maximum_capacity.data if form.offering_type.data == "Group" else 1
+
+        # Create the Offering object without 'available_spots' in __init__
         new_offering = Offering(
             lesson_type=form.lesson_type.data,
             location_id=form.location.data,
             start_time=form.start_time.data,
             end_time=form.end_time.data,
-            maximum_capacity=form.maximum_capacity.data,
-            offering_type=form.offering_type.data or "General"  # Default if not specified
-            # instructor_id remains None for later assignment
+            maximum_capacity=maximum_capacity,
+            offering_type=form.offering_type.data
         )
-        
+
+        # Set 'available_spots' after creation
+        new_offering.available_spots = maximum_capacity
+
         # Add the new offering to the database
         db.session.add(new_offering)
         db.session.commit()
@@ -179,7 +184,6 @@ def create_offering():
         return redirect(url_for('index'))
 
     return render_template('create_offering.html', form=form)
-
 
 
 

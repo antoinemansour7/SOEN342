@@ -65,19 +65,27 @@ class ClientRegistrationForm(FlaskForm):
 
 
 
+
+
 class OfferingForm(FlaskForm):
     lesson_type = StringField('Lesson Type', validators=[DataRequired(), Length(min=2, max=50)])
     offering_type = SelectField('Offering Type', choices=[('Group', 'Group'), ('Private', 'Private')], validators=[DataRequired()])
     location = SelectField('Location', coerce=int, validators=[DataRequired()])
     start_time = DateTimeField('Start Time', format='%Y-%m-%dT%H:%M', validators=[DataRequired()])
     end_time = DateTimeField('End Time', format='%Y-%m-%dT%H:%M', validators=[DataRequired()])
-    maximum_capacity = IntegerField('Maximum Capacity', validators=[DataRequired()])
+    maximum_capacity = IntegerField('Maximum Capacity', validators=[Optional()])
     submit = SubmitField('Create Offering')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Populate location choices from the database
         self.location.choices = [(location.id, f"{location.name} - {location.city}") for location in Location.query.all()]
+
+    def validate_maximum_capacity(self, maximum_capacity):
+        # Ensure maximum_capacity is provided if offering_type is 'Group'
+        if self.offering_type.data == 'Group' and not maximum_capacity.data:
+            raise ValidationError('Please provide a maximum capacity for group offerings.')
+
 
 
 
