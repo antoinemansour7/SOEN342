@@ -121,13 +121,11 @@ def register_instructor():
 def login():
     form = LoginForm()  # Assuming LoginForm is your form class
     if form.validate_on_submit():
-        # Try to find the user in each role type
         user = Admin.query.filter_by(username=form.username.data).first() or \
                Instructor.query.filter_by(username=form.username.data).first() or \
                Client.query.filter_by(username=form.username.data).first()
         
         if user and bcrypt.check_password_hash(user.password, form.password.data):
-            # Set the role in the session for load_user to reference
             if isinstance(user, Admin):
                 session['role'] = 'admin'
             elif isinstance(user, Instructor):
@@ -136,11 +134,12 @@ def login():
                 session['role'] = 'client'
                 
             login_user(user)
-            flash('Logged in successfully!', 'success')
+            # Removed success flash message
             return redirect(url_for('index'))
         else:
             flash('Login unsuccessful. Please check username and password.', 'danger')
     return render_template('login.html', form=form)
+
 
 
 
@@ -208,7 +207,7 @@ def create_location():
 @app.route('/logout')
 def logout():
     logout_user()
-    flash('You have been logged out successfully.', 'info')
+    
     return redirect(url_for('index'))
 
 @app.route('/unassigned_offerings')
