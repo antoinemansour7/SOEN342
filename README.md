@@ -116,6 +116,11 @@ System Sequence Diagram of Clients:
 
 --- 
 
+Interaction Diagram of Create Location (Admin):
+
+![Communication Diagram of Create Location](Communication%20Diagram%20Create%20Location.PNG)    
+   
+     
 Interaction Diagram of Create Offering (Admin):
 
 ![Communication Diagram of Create Offering](Communication%20Diagram%20Create%20Offering.PNG)      
@@ -123,8 +128,13 @@ Interaction Diagram of Create Offering (Admin):
 
 Interaction Diagram of Book (Client):
 
-![Communication Diagram of Book](Communication%20Diagram%20Book.PNG) 
+![Communication Diagram of Book](Communication%20Diagram%20Book.PNG)   
 
+
+Interaction Diagram of Accept Offering (Instructor):
+
+![Communication Diagram of Create Location](Communication%20Diagram%20Accept%20Offering.PNG) 
+  
 
 
 
