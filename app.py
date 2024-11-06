@@ -245,8 +245,24 @@ def claim_offering(offering_id):
         return redirect(url_for('index'))
 
     offering = Offering.query.get_or_404(offering_id)
+
+    # Check if the offering has already been claimed
     if offering.is_assigned:
         flash('This offering has already been claimed.', 'warning')
+        return redirect(url_for('unassigned_offerings'))
+
+    # Check if the offering is in the instructor's city and specialty
+    if offering.location.city != current_user.city or offering.lesson_type != current_user.specialization:
+        flash('You can only claim offerings in your city and specialty.', 'danger')
+        return redirect(url_for('unassigned_offerings'))
+
+    # Check if the instructor already has an offering at the same time
+    overlapping_offering = Offering.query.filter_by(instructor_id=current_user.id).filter(
+        (Offering.start_time < offering.end_time) &
+        (Offering.end_time > offering.start_time)
+    ).first()
+    if overlapping_offering:
+        flash('You already have an offering at this time.', 'warning')
         return redirect(url_for('unassigned_offerings'))
 
     # Assign the offering to the instructor and mark it as assigned
@@ -256,6 +272,8 @@ def claim_offering(offering_id):
 
     flash('Offering successfully claimed!', 'success')
     return redirect(url_for('index'))
+
+
 
 
 @app.route('/attend_offering/<int:offering_id>', methods=['POST'])
