@@ -7,6 +7,18 @@
 <body>
     <div class="container">
         <h2>Unassigned Offerings</h2>
+
+       <!-- Flash Messages Section for All Messages -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+    <div class="flash-messages">
+        {% for category, message in messages %}
+            <div class="flash-message {{ category }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+{% endif %}
+{% endwith %}
+
         <ul>
             {% for offering in offerings %}
                 <li class="offering-card">
@@ -32,6 +44,7 @@
                 </li>
             {% endfor %}
         </ul>
+
         <a href="{{ url_for('index') }}" class="form-button">Back to Offerings</a>
     </div>
 </body>
