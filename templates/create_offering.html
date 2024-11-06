@@ -23,6 +23,18 @@
 <body>
     <div class="form-container">
         <h2>Create Offering</h2>
+        
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="flash-message {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        
         <form method="POST" action="{{ url_for('create_offering') }}">
             {{ form.hidden_tag() }}
             <div>
@@ -56,10 +68,11 @@
             </div>
         </form>
 
+        <!-- Field Error Messages -->
         {% for field, errors in form.errors.items() %}
-        {% for error in errors %}
-            <p style="color: red;">{{ error }}</p>
-        {% endfor %}
+            {% for error in errors %}
+                <p style="color: red;">{{ error }}</p>
+            {% endfor %}
         {% endfor %}
     </div>
 </body>
