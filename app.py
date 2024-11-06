@@ -93,7 +93,7 @@ def register_client():
                 db.session.add(child)
                 db.session.commit()
         
-        flash('Your client account has been created!', 'success')
+        
         return redirect(url_for('login'))
     
     return render_template('register_client.html', form=form)
@@ -113,7 +113,7 @@ def register_instructor():
         instructor = Instructor(username=form.username.data, specialization=form.specialization.data, password=hashed_password, phone=form.phone.data, city=form.city.data)
         db.session.add(instructor)
         db.session.commit()
-        flash('Your instructor account has been created!', 'success')
+        
         return redirect(url_for('login'))
     return render_template('register_instructor.html', form=form)
 
@@ -155,10 +155,20 @@ def create_offering():
 
     form = OfferingForm()
 
-    # Process form submission
     if form.validate_on_submit():
         # Determine maximum capacity: default to 1 for private offerings
         maximum_capacity = form.maximum_capacity.data if form.offering_type.data == "Group" else 1
+
+        # Check for overlapping offerings at the same location and time
+        overlapping_offering = Offering.query.filter(
+            Offering.location_id == form.location.data,
+            Offering.start_time < form.end_time.data,
+            Offering.end_time > form.start_time.data
+        ).first()
+
+        if overlapping_offering:
+            flash('This location already has an offering scheduled at the same time.', 'danger')
+            return render_template('create_offering.html', form=form)
 
         # Create the Offering object without 'available_spots' in __init__
         new_offering = Offering(
@@ -184,6 +194,7 @@ def create_offering():
         return redirect(url_for('index'))
 
     return render_template('create_offering.html', form=form)
+
 
 
 
