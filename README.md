@@ -21,7 +21,7 @@ Class Diagram:
 
 Package Diagram:
 
-![Package Diagram](Package%20Dragram.PNG)     
+![Package Diagram](Package%20Diagram.PNG)     
 
 
 System Sequence Diagram of Administrator:
