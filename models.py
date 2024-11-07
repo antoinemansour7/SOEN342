@@ -1,10 +1,12 @@
 from extensions import db  # Import db from extensions
 from flask_login import UserMixin
 
+# Updated attendees table to track clients and children
 attendees_table = db.Table('attendees',
     db.Column('client_id', db.Integer, db.ForeignKey('client.id'), primary_key=True),
     db.Column('offering_id', db.Integer, db.ForeignKey('offering.id'), primary_key=True)
 )
+
 
 # Catalog classes for each model
 class OfferingsCatalog:
@@ -77,10 +79,9 @@ class Client(db.Model, UserMixin):
     role = db.Column(db.String(50), default="client")
 
     # Relationships
-    children = db.relationship(
-        'Child', backref='guardian', lazy=True, cascade="all, delete-orphan"
-    )
+    
     bookings = db.relationship('Booking', back_populates='client', lazy=True)
+    children = db.relationship('Child', backref='guardian', lazy=True, cascade="all, delete-orphan")
     offerings = db.relationship('Offering', secondary=attendees_table, back_populates='attendees')
 
 
@@ -157,6 +158,7 @@ class Offering(db.Model):
     instructor_id = db.Column(db.Integer, db.ForeignKey('instructor.id'), nullable=True)
     is_assigned = db.Column(db.Boolean, default=False)  # Track if offering is assigned
     attendees = db.relationship('Client', secondary=attendees_table, back_populates='offerings')
+  
 
     # Relationships
     bookings = db.relationship('Booking', back_populates='offering')

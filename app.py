@@ -279,28 +279,35 @@ def claim_offering(offering_id):
 @app.route('/attend_offering/<int:offering_id>', methods=['POST'])
 @login_required
 def attend_offering(offering_id):
-    # Ensure the user is a client
     if not isinstance(current_user, Client):
         flash('Only clients can attend offerings.', 'danger')
         return redirect(url_for('index'))
-    
-    # Fetch the offering
+
     offering = Offering.query.get_or_404(offering_id)
-    
-    # Check if there are available spots and if the client is not already an attendee
+    selected_child_id = request.form.get('child_id')  # Get 'child_id' if selected in form
+
     if offering.available_spots > 0:
-        if current_user not in offering.attendees:
-            # Add client to attendees and decrement available spots
+        # Check if booking for a child
+        if selected_child_id:
+            child = Child.query.get(selected_child_id)
+            if child and child not in offering.attendees:
+                offering.attendees.append(current_user)
+                offering.available_spots -= 1
+                db.session.commit()
+                flash(f'{child.name} is now attending this offering!', 'success')
+        # Otherwise, book for the client
+        elif current_user not in offering.attendees:
             offering.attendees.append(current_user)
-            offering.available_spots -= 1  # Decrement available spots
+            offering.available_spots -= 1
             db.session.commit()
             flash('You are now attending this offering!', 'success')
-        else:
-            flash('You are already attending this offering.', 'info')
     else:
         flash('Sorry, no available spots left for this offering.', 'danger')
-    
+
     return redirect(url_for('index'))
+
+
+
 
 
 

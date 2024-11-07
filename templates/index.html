@@ -62,18 +62,19 @@
                         </a>
                         <!-- Attend Button (for clients only) -->
                         {% if current_user.is_authenticated and current_user.__class__.__name__ == 'Client' and current_user not in offering.attendees and offering.available_spots > 0 %}
-                            <form action="{{ url_for('attend_offering', offering_id=offering.id) }}" method="POST">
-                                <div>
-                                    <label for="child_id">Attend as:</label>
-                                    <select name="child_id" id="child_id">
-                                        <option value="">Self</option>
-                                        {% for child in current_user.children %}
-                                            <option value="{{ child.id }}">{{ child.name }}</option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                                <button type="submit" class="form-button">Attend</button>
-                            </form>
+                        <form action="{{ url_for('attend_offering', offering_id=offering.id) }}" method="POST">
+                            {% if current_user.children %}
+                                <label for="child_id">Book for:</label>
+                                <select name="child_id" id="child_id">
+                                    <option value="">Myself</option>
+                                    {% for child in current_user.children %}
+                                        <option value="{{ child.id }}">{{ child.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            {% endif %}
+                            <button type="submit" class="form-button">Attend</button>
+                        </form>
+                        
                         {% endif %}
                     </li>
                 {% endfor %}
