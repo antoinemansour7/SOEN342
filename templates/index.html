@@ -53,11 +53,13 @@
                             {% if offering.available_spots == 0 %}
                                 <p class="unavailable-text">Not Available</p>
                             {% else %}
-                                {% if current_user.is_authenticated and current_user.__class__.__name__ == 'Client' %}
-                                    {% if current_user in offering.attendees %}
-                                        <p class="attending-text">You are already attending this offering.</p>
-                                    {% endif %}
-                                {% endif %}
+                            {% if current_user.is_authenticated and current_user.__class__.__name__ == 'Client' %}
+                            {% if current_user in offering.attendees %}
+                                <p class="attending-text">{{ session['attendance_' ~ offering.id] or 'You are already attending this offering.' }}</p>
+                            {% endif %}
+                        {% endif %}
+                        
+
                             {% endif %}
                         </a>
                         <!-- Attend Button (for clients only) -->
