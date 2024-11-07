@@ -18,21 +18,28 @@
         </div>
 
         {% if current_user.is_authenticated and current_user.role == 'admin' %}
-            <h3>Attendees</h3>
-            {% if offering.attendees %}
-                <ul>
-                    {% for attendee in offering.attendees %}
-                        <li class="attendee">
-                            {{ attendee.username }}
-                            <form action="{{ url_for('remove_attendee', offering_id=offering.id, user_id=attendee.id) }}" method="POST" style="display: inline;">
-                                <button type="submit" class="remove-button">Remove</button>
-                            </form>
-                        </li>
-                    {% endfor %}
-                </ul>
-            {% else %}
-                <p>No attendees for this offering yet.</p>
-            {% endif %}
+        <h3>Attendees</h3>
+        {% if offering.attendees %}
+            <ul>
+                {% for attendee in offering.attendees %}
+                    <li class="attendee">
+                        {{ attendee.username }}
+                        {% for booking in session.get('booking_details', []) %}
+                            {% if booking.client_name == attendee.username and booking.offering_id == offering.id %}
+                                <span>(booked for child: {{ booking.child_name }})</span>
+                            {% endif %}
+                        {% endfor %}
+                        <form action="{{ url_for('remove_attendee', offering_id=offering.id, user_id=attendee.id) }}" method="POST" style="display: inline;">
+                            <button type="submit" class="remove-button">Remove</button>
+                        </form>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No attendees for this offering yet.</p>
+        {% endif %}
+        
+
 
             <!-- Button to delete the offering -->
             <form action="{{ url_for('delete_offering', offering_id=offering.id) }}" method="POST" class="delete-offering-form">

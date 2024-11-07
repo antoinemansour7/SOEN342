@@ -276,6 +276,8 @@ def claim_offering(offering_id):
 
 
 
+from flask import session
+
 @app.route('/attend_offering/<int:offering_id>', methods=['POST'])
 @login_required
 def attend_offering(offering_id):
@@ -287,15 +289,23 @@ def attend_offering(offering_id):
     selected_child_id = request.form.get('child_id')  # Get 'child_id' if selected in form
 
     if offering.available_spots > 0:
-        # Check if booking for a child
-        if selected_child_id:
+        if selected_child_id:  # Booking for a child
             child = Child.query.get(selected_child_id)
             if child and child not in offering.attendees:
                 offering.attendees.append(current_user)
                 offering.available_spots -= 1
                 db.session.commit()
-                flash(f'{child.name} is now attending this offering!', 'success')
-        # Otherwise, book for the client
+                
+                # Store in session to display on admin view
+                if 'booking_details' not in session:
+                    session['booking_details'] = []
+                session['booking_details'].append({
+                    'client_name': current_user.username,
+                    'child_name': child.name,
+                    'offering_id': offering_id
+                })
+                
+                flash(f'{current_user.username} booked for their child {child.name}!', 'success')
         elif current_user not in offering.attendees:
             offering.attendees.append(current_user)
             offering.available_spots -= 1
@@ -305,6 +315,8 @@ def attend_offering(offering_id):
         flash('Sorry, no available spots left for this offering.', 'danger')
 
     return redirect(url_for('index'))
+
+
 
 
 
