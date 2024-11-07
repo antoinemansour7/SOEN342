@@ -303,6 +303,7 @@ def attend_offering(offering_id):
     return redirect(url_for('index'))
 
 
+
 @app.route('/delete_offering/<int:offering_id>', methods=['POST'])
 @login_required
 def delete_offering(offering_id):
