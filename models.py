@@ -118,20 +118,22 @@ class Instructor(db.Model,UserMixin):
 
 class Booking(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    client_id = db.Column(db.Integer, db.ForeignKey('client.id'), nullable=False)
+    client_id = db.Column(db.Integer, db.ForeignKey('client.id'), nullable=True)
+    child_id = db.Column(db.Integer, db.ForeignKey('child.id'), nullable=True)
     offering_id = db.Column(db.Integer, db.ForeignKey('offering.id'), nullable=False)
     lesson_type = db.Column(db.String(50), nullable=False)
     start_time = db.Column(db.String(50), nullable=False)
     end_time = db.Column(db.String(50), nullable=False)
     date = db.Column(db.String(50), nullable=False)
 
-    # Relationships to Client and Offering
+    # Relationships to Client, Child, and Offering
     client = db.relationship('Client', back_populates='bookings')
+    child = db.relationship('Child')
     offering = db.relationship('Offering', back_populates='bookings')
-   
 
-    def __init__(self, client_id, offering_id, lesson_type, start_time, end_time, date):
+    def __init__(self, offering_id, lesson_type, start_time, end_time, date, client_id=None, child_id=None):
         self.client_id = client_id
+        self.child_id = child_id
         self.offering_id = offering_id
         self.lesson_type = lesson_type
         self.start_time = start_time
@@ -140,6 +142,7 @@ class Booking(db.Model):
 
     def __repr__(self):
         return f"Booking(Lesson Type: {self.lesson_type}, Date: {self.date}, Time: {self.start_time} - {self.end_time})"
+
 
 
 class Offering(db.Model):
