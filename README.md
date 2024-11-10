@@ -12,7 +12,7 @@ Use Case UML:
 
 Domain Model:
 
-![Domain Model](DomainMsourcodel.png)  
+![Domain Model](DomainModel.png)  
 
 Class Diagram:
 
