@@ -136,6 +136,7 @@ Interaction Diagram of Accept Offering (Instructor):
 ![Communication Diagram of Create Location](Communication%20Diagram%20Accept%20Offering.PNG) 
   
 
-
+Relational Data Model:
+ ![Relational Data Model](RelationalDataModel.png) 
 
 
