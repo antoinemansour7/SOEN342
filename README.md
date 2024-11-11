@@ -7,7 +7,7 @@
 
 Use Case UML:    
 
-![Use Case UML](.Use%20Case%20UML.png)      
+![Use Case UML](Use%20Case%20UML.png)      
 
 
 Domain Model:
