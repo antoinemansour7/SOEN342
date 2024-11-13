@@ -8,7 +8,6 @@ attendees_table = db.Table('attendees',
 )
 
 
-# Catalog classes for each model
 class OfferingsCatalog:
     offerings = []
 
@@ -18,6 +17,14 @@ class OfferingsCatalog:
             return Offering.query.all()  # Fetch directly from the database if in app context
         except RuntimeError:
             return cls.offerings  # Fallback to the in-memory list if outside app context
+
+    @classmethod
+    def find_by_id(cls, id):
+        try:
+            return Offering.query.get(id)  # Use database query to find by ID
+        except RuntimeError:
+            # Fallback to searching in the in-memory list
+            return next((offering for offering in cls.offerings if offering.id == id), None)
 
 
 class InstructorsCatalog:
@@ -30,6 +37,13 @@ class InstructorsCatalog:
         except RuntimeError:
             return cls.instructors
 
+    @classmethod
+    def find_by_id(cls, id):
+        try:
+            return Instructor.query.get(id)
+        except RuntimeError:
+            return next((instructor for instructor in cls.instructors if instructor.id == id), None)
+
 
 class LocationsCatalog:
     locations = []
@@ -41,6 +55,13 @@ class LocationsCatalog:
         except RuntimeError:
             return cls.locations
 
+    @classmethod
+    def find_by_id(cls, id):
+        try:
+            return Location.query.get(id)
+        except RuntimeError:
+            return next((location for location in cls.locations if location.id == id), None)
+
 
 class BookingsCatalog:
     bookings = []
@@ -51,6 +72,13 @@ class BookingsCatalog:
             return Booking.query.all()
         except RuntimeError:
             return cls.bookings
+
+    @classmethod
+    def find_by_id(cls, id):
+        try:
+            return Booking.query.get(id)
+        except RuntimeError:
+            return next((booking for booking in cls.bookings if booking.id == id), None)
 
 
 
