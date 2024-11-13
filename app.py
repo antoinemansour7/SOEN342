@@ -379,21 +379,26 @@ def remove_attendee(offering_id, user_id):
     if current_user.role != 'admin':
         flash('Only admins can remove attendees.', 'danger')
         return redirect(url_for('view_offering', offering_id=offering_id))
-    
+
     offering = Offering.query.get_or_404(offering_id)
     attendee = Client.query.get_or_404(user_id)
-    
-    # Remove attendee and increment available spots
+
+    # Remove attendee from the offering and increment available spots
     if attendee in offering.attendees:
         offering.attendees.remove(attendee)
         offering.available_spots += 1
+
+        # Remove any associated bookings for this client and offering
+        booking = Booking.query.filter_by(client_id=user_id, offering_id=offering_id).first()
+        if booking:
+            db.session.delete(booking)
+
         db.session.commit()
         flash('Attendee removed successfully!', 'success')
     else:
         flash('Attendee not found in this offering.', 'info')
 
     return redirect(url_for('view_offering', offering_id=offering_id))
-
 
 
 @app.route('/view_offering/<int:offering_id>')
