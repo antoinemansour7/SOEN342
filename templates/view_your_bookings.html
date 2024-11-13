@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <title>Your Bookings</title>
+</head>
+<body>
+    <div class="container">
+        <h2>Your Bookings</h2>
+
+        {% if bookings %}
+            <ul>
+                {% for booking in bookings %}
+                    <li>
+                        <p><strong>Lesson Type:</strong> {{ booking.lesson_type }}</p>
+                        <p><strong>Date:</strong> {{ booking.date }}</p>
+                        <p><strong>Time:</strong> {{ booking.start_time }} - {{ booking.end_time }}</p>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>You have no bookings at the moment.</p>
+        {% endif %}
+    </div>
+</body>
+</html>
