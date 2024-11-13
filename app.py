@@ -291,25 +291,48 @@ def attend_offering(offering_id):
     selected_child_id = request.form.get('child_id')  # Get 'child_id' if selected in form
 
     if offering.available_spots > 0:
-        if selected_child_id:  # Booking for a child
+        # If booking for a child
+        if selected_child_id:
             child = Child.query.get(selected_child_id)
             if child and child not in offering.attendees:
                 offering.attendees.append(current_user)
                 offering.available_spots -= 1
+
+                # Create a new Booking for the child
+                booking = Booking(
+                    offering_id=offering.id,
+                    lesson_type=offering.lesson_type,
+                    start_time=offering.start_time.strftime('%I:%M %p'),
+                    end_time=offering.end_time.strftime('%I:%M %p'),
+                    date=offering.start_time.strftime('%B %d'),
+                    client_id=current_user.id,
+                    child_id=child.id
+                )
+                db.session.add(booking)
                 db.session.commit()
 
-                # Store in session to display on template
                 session[f'attendance_{offering.id}'] = f'Your child {child.name} is attending this offering.'
                 flash(f'{child.name} is now attending this offering!', 'success')
             else:
                 flash(f'{child.name} is already attending this offering.', 'info')
+        # If booking for the client directly
         elif current_user not in offering.attendees:
             offering.attendees.append(current_user)
             offering.available_spots -= 1
+
+            # Create a new Booking for the client
+            booking = Booking(
+                offering_id=offering.id,
+                lesson_type=offering.lesson_type,
+                start_time=offering.start_time.strftime('%I:%M %p'),
+                end_time=offering.end_time.strftime('%I:%M %p'),
+                date=offering.start_time.strftime('%B %d'),
+                client_id=current_user.id
+            )
+            db.session.add(booking)
             db.session.commit()
-            
-            # Store message for client attendance
-            session[f'attendance_{offering.id}'] = 'You are already attending this offering.'
+
+            session[f'attendance_{offering.id}'] = 'You are now attending this offering.'
             flash('You are now attending this offering!', 'success')
     else:
         flash('Sorry, no available spots left for this offering.', 'danger')
@@ -317,10 +340,16 @@ def attend_offering(offering_id):
     return redirect(url_for('index'))
 
 
+@app.route('/view_your_bookings')
+@login_required
+def view_your_bookings():
+    if not isinstance(current_user, Client):
+        flash('Only clients can view bookings.', 'danger')
+        return redirect(url_for('index'))
 
-
-
-
+    # Retrieve bookings associated with the current client
+    bookings = Booking.query.filter_by(client_id=current_user.id).all()
+    return render_template('view_your_bookings.html', bookings=bookings)
 
 
 @app.route('/delete_offering/<int:offering_id>', methods=['POST'])
