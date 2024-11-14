@@ -5,21 +5,21 @@
 
 ---
 
-Use Case UML:    
+#### Use Case UML:    
 
 ![Use Case UML](Use%20Case%20UML.png)      
 
 
-Domain Model:
+#### Domain Model:
 
 ![Domain Model](DomainModel.png)  
 
-Class Diagram:
+#### Class Diagram:
 
 ![Domain Model](ClassDiagram.png)  
 
 
-Package Diagram:
+#### Package Diagram:
 
 ![Package Diagram](Package%20Diagram.PNG)     
 
