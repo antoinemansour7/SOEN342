@@ -5,21 +5,21 @@
 
 ---
 
-Use Case UML:    
+#### Use Case UML:    
 
 ![Use Case UML](Use%20Case%20UML.png)      
 
 
-Domain Model:
+#### Domain Model:
 
 ![Domain Model](DomainModel.png)  
 
-Class Diagram:
+#### Class Diagram:
 
 ![Domain Model](ClassDiagram.png)  
 
 
-Package Diagram:
+#### Package Diagram:
 
 ![Package Diagram](Package%20Diagram.PNG)     
 
@@ -139,4 +139,46 @@ Interaction Diagram of Accept Offering (Instructor):
 Relational Data Model:
  ![Relational Data Model](RelationalDataModel.png) 
 
+
+#### Requirement 1:   
+“Offerings are unique. In other words, multiple offerings on the same day and time slot must be offered at a different location.”
+
+```
+context Offering
+inv UniqueOfferingsByLocation:
+    Offering.allInstances()->forAll(o1, o2 |
+        o1 <> o2 implies
+        (o1.start_time <> o2.start_time or o1.end_time <> o2.end_time or o1.date <> o2.date or o1.location_id <> o2.location_id)
+    )
+```
+#### Requirement 2:   
+“Any client who is underage must necessarily be accompanied by an adult who acts as their guardian.”
+```
+context Booking
+inv UnderageBooking:
+    -- Ensure that only adult clients (age >= 18) can make a booking
+    self.client.age >= 18
+```
+#### Requirement 3:  
+“The city associated with an offering must be one the city’s that the instructor has indicated in their availabilities.”
+
+```
+context Offering
+inv CityMatchesInstructorAvailability:
+    let offeringCity : String = self.location.city in
+        Instructor.allInstances()->exists(instructor |
+            instructor.id = self.instructor_id and
+            instructor.city = offeringCity)
+
+```
+#### Requirement 4:
+“A client does not have multiple bookings on the same day and time slot.” (for simplicity we consider only identical day and time slots, even though in reality a booking on Monday 3pm – 4pm and another also on Monday 3:30pm – 4:30pm should not be acceptable.)
+```
+context Booking
+inv NoMultipleBookingsForSameClientAndTime:
+    Booking.allInstances()->forAll(b1, b2 |
+        b1 <> b2 implies
+        (b1.client_id <> b2.client_id or b1.start_time <> b2.start_time or b1.end_time <> b2.end_time or b1.date <> b2.date)
+    )
+```
 

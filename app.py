@@ -297,6 +297,18 @@ def attend_offering(offering_id):
             if child and child not in offering.attendees:
                 offering.attendees.append(child)
                 offering.available_spots -= 1
+
+                # Create a new Booking for the child
+                booking = Booking(
+                    offering_id=offering.id,
+                    lesson_type=offering.lesson_type,
+                    start_time=offering.start_time.strftime('%I:%M %p'),
+                    end_time=offering.end_time.strftime('%I:%M %p'),
+                    date=offering.start_time.strftime('%B %d'),
+                    client_id=current_user.id,
+                    child_id=child.id
+                )
+                db.session.add(booking)
                 db.session.commit()
                 flash(f'{child.name} is now attending this offering!', 'success')
             else:
@@ -304,6 +316,17 @@ def attend_offering(offering_id):
         else:
             offering.attendees.append(current_user)
             offering.available_spots -= 1
+
+            # Create a new Booking for the client
+            booking = Booking(
+                offering_id=offering.id,
+                lesson_type=offering.lesson_type,
+                start_time=offering.start_time.strftime('%I:%M %p'),
+                end_time=offering.end_time.strftime('%I:%M %p'),
+                date=offering.start_time.strftime('%B %d'),
+                client_id=current_user.id
+            )
+            db.session.add(booking)
             db.session.commit()
             flash('You are now attending this offering!', 'success')
     else:
@@ -312,10 +335,16 @@ def attend_offering(offering_id):
     return redirect(url_for('index'))
 
 
+@app.route('/view_your_bookings')
+@login_required
+def view_your_bookings():
+    if not isinstance(current_user, Client):
+        flash('Only clients can view bookings.', 'danger')
+        return redirect(url_for('index'))
 
-
-
-
+    # Retrieve bookings associated with the current client
+    bookings = Booking.query.filter_by(client_id=current_user.id).all()
+    return render_template('view_your_bookings.html', bookings=bookings)
 
 
 
@@ -346,21 +375,26 @@ def remove_attendee(offering_id, user_id):
     if current_user.role != 'admin':
         flash('Only admins can remove attendees.', 'danger')
         return redirect(url_for('view_offering', offering_id=offering_id))
-    
+
     offering = Offering.query.get_or_404(offering_id)
     attendee = Client.query.get_or_404(user_id)
-    
-    # Remove attendee and increment available spots
+
+    # Remove attendee from the offering and increment available spots
     if attendee in offering.attendees:
         offering.attendees.remove(attendee)
         offering.available_spots += 1
+
+        # Remove any associated bookings for this client and offering
+        booking = Booking.query.filter_by(client_id=user_id, offering_id=offering_id).first()
+        if booking:
+            db.session.delete(booking)
+
         db.session.commit()
         flash('Attendee removed successfully!', 'success')
     else:
         flash('Attendee not found in this offering.', 'info')
 
     return redirect(url_for('view_offering', offering_id=offering_id))
-
 
 
 @app.route('/view_offering/<int:offering_id>')
