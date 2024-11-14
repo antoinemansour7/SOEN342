@@ -6,21 +6,6 @@
 </head>
 <body>
     <div class="container">
-        <!-- Flash Messages (General, shown at the top for all other messages) -->
-        {% with messages = get_flashed_messages(with_categories=True) %}
-            {% if messages %}
-                <div class="flash-messages">
-                    {% for category, message in messages %}
-                        {% if message != 'You already have a booking at this exact date and time slot.' %}
-                            <div class="alert alert-{{ category }}">
-                                {{ message }}
-                            </div>
-                        {% endif %}
-                    {% endfor %}
-                </div>
-            {% endif %}
-        {% endwith %}
-
         <!-- Top Section (Login/Sign Up) -->
         <div class="top-section">
             {% if not current_user.is_authenticated %}
@@ -68,29 +53,30 @@
                             {% if offering.available_spots == 0 %}
                                 <p class="unavailable-text">Not Available</p>
                             {% else %}
-                                {% if current_user.is_authenticated and current_user.__class__.__name__ == 'Client' %}
-                                    {% if current_user in offering.attendees %}
-                                        <p class="attending-text">{{ session['attendance_' ~ offering.id] or 'You are already attending this offering.' }}</p>
-                                    {% elif session['booking_conflict'] == offering.id %}
-                                        <p class="alert alert-warning">You already have a booking at this exact date and time slot.</p>
-                                    {% endif %}
-                                {% endif %}
+                            {% if current_user.is_authenticated and current_user.__class__.__name__ == 'Client' %}
+                            {% if current_user in offering.attendees %}
+                                <p class="attending-text">{{ session['attendance_' ~ offering.id] or 'You are already attending this offering.' }}</p>
+                            {% endif %}
+                        {% endif %}
+                        
+
                             {% endif %}
                         </a>
                         <!-- Attend Button (for clients only) -->
                         {% if current_user.is_authenticated and current_user.__class__.__name__ == 'Client' and current_user not in offering.attendees and offering.available_spots > 0 %}
-                            <form action="{{ url_for('attend_offering', offering_id=offering.id) }}" method="POST">
-                                {% if current_user.children %}
-                                    <label for="child_id">Book for:</label>
-                                    <select name="child_id" id="child_id">
-                                        <option value="">Myself</option>
-                                        {% for child in current_user.children %}
-                                            <option value="{{ child.id }}">{{ child.name }}</option>
-                                        {% endfor %}
-                                    </select>
-                                {% endif %}
-                                <button type="submit" class="form-button">Attend</button>
-                            </form>
+                        <form action="{{ url_for('attend_offering', offering_id=offering.id) }}" method="POST">
+                            {% if current_user.children %}
+                                <label for="child_id">Book for:</label>
+                                <select name="child_id" id="child_id">
+                                    <option value="">Myself</option>
+                                    {% for child in current_user.children %}
+                                        <option value="{{ child.id }}">{{ child.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            {% endif %}
+                            <button type="submit" class="form-button">Attend</button>
+                        </form>
+                        
                         {% endif %}
                     </li>
                 {% endfor %}

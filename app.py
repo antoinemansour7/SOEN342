@@ -288,16 +288,7 @@ def attend_offering(offering_id):
     offering = Offering.query.get_or_404(offering_id)
     selected_child_id = request.form.get('child_id')  # Get 'child_id' if selected in form
 
-    # Check for existing bookings with the exact same start and end datetime
-    existing_offering = Offering.query.join(attendees_table).filter(
-        attendees_table.c.client_id == current_user.id,
-        Offering.start_time == offering.start_time,
-        Offering.end_time == offering.end_time
-    ).first()
-
-    if existing_offering:
-        flash('You already have a booking at this exact date and time slot.', 'warning')
-        return redirect(url_for('index'))
+   
 
     if offering.available_spots > 0:
         # Process booking for either client or child
