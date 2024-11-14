@@ -278,8 +278,6 @@ def claim_offering(offering_id):
 
 
 
-from flask import session
-
 @app.route('/attend_offering/<int:offering_id>', methods=['POST'])
 @login_required
 def attend_offering(offering_id):
@@ -290,12 +288,14 @@ def attend_offering(offering_id):
     offering = Offering.query.get_or_404(offering_id)
     selected_child_id = request.form.get('child_id')  # Get 'child_id' if selected in form
 
+   
+
     if offering.available_spots > 0:
-        # If booking for a child
+        # Process booking for either client or child
         if selected_child_id:
             child = Child.query.get(selected_child_id)
             if child and child not in offering.attendees:
-                offering.attendees.append(current_user)
+                offering.attendees.append(child)
                 offering.available_spots -= 1
 
                 # Create a new Booking for the child
@@ -310,13 +310,10 @@ def attend_offering(offering_id):
                 )
                 db.session.add(booking)
                 db.session.commit()
-
-                session[f'attendance_{offering.id}'] = f'Your child {child.name} is attending this offering.'
                 flash(f'{child.name} is now attending this offering!', 'success')
             else:
                 flash(f'{child.name} is already attending this offering.', 'info')
-        # If booking for the client directly
-        elif current_user not in offering.attendees:
+        else:
             offering.attendees.append(current_user)
             offering.available_spots -= 1
 
@@ -331,8 +328,6 @@ def attend_offering(offering_id):
             )
             db.session.add(booking)
             db.session.commit()
-
-            session[f'attendance_{offering.id}'] = 'You are now attending this offering.'
             flash('You are now attending this offering!', 'success')
     else:
         flash('Sorry, no available spots left for this offering.', 'danger')
@@ -350,6 +345,7 @@ def view_your_bookings():
     # Retrieve bookings associated with the current client
     bookings = Booking.query.filter_by(client_id=current_user.id).all()
     return render_template('view_your_bookings.html', bookings=bookings)
+
 
 
 @app.route('/delete_offering/<int:offering_id>', methods=['POST'])
