@@ -7,7 +7,7 @@
 
 Use Case UML:    
 
-![Use Case UML](./USE%20CASE%20UML.jpg)      
+![Use Case UML](Use%20Case%20UML.png)      
 
 
 Domain Model:
@@ -136,6 +136,7 @@ Interaction Diagram of Accept Offering (Instructor):
 ![Communication Diagram of Create Location](Communication%20Diagram%20Accept%20Offering.PNG) 
   
 
-
+Relational Data Model:
+ ![Relational Data Model](RelationalDataModel.png) 
 
 
