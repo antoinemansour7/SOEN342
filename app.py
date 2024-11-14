@@ -278,8 +278,6 @@ def claim_offering(offering_id):
 
 
 
-from flask import session
-
 @app.route('/attend_offering/<int:offering_id>', methods=['POST'])
 @login_required
 def attend_offering(offering_id):
@@ -290,31 +288,38 @@ def attend_offering(offering_id):
     offering = Offering.query.get_or_404(offering_id)
     selected_child_id = request.form.get('child_id')  # Get 'child_id' if selected in form
 
+    # Check for existing bookings with the exact same start and end datetime
+    existing_offering = Offering.query.join(attendees_table).filter(
+        attendees_table.c.client_id == current_user.id,
+        Offering.start_time == offering.start_time,
+        Offering.end_time == offering.end_time
+    ).first()
+
+    if existing_offering:
+        flash('You already have a booking at this exact date and time slot.', 'warning')
+        return redirect(url_for('index'))
+
     if offering.available_spots > 0:
-        if selected_child_id:  # Booking for a child
+        # Process booking for either client or child
+        if selected_child_id:
             child = Child.query.get(selected_child_id)
             if child and child not in offering.attendees:
-                offering.attendees.append(current_user)
+                offering.attendees.append(child)
                 offering.available_spots -= 1
                 db.session.commit()
-
-                # Store in session to display on template
-                session[f'attendance_{offering.id}'] = f'Your child {child.name} is attending this offering.'
                 flash(f'{child.name} is now attending this offering!', 'success')
             else:
                 flash(f'{child.name} is already attending this offering.', 'info')
-        elif current_user not in offering.attendees:
+        else:
             offering.attendees.append(current_user)
             offering.available_spots -= 1
             db.session.commit()
-            
-            # Store message for client attendance
-            session[f'attendance_{offering.id}'] = 'You are already attending this offering.'
             flash('You are now attending this offering!', 'success')
     else:
         flash('Sorry, no available spots left for this offering.', 'danger')
 
     return redirect(url_for('index'))
+
 
 
 
