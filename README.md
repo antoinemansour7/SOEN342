@@ -138,7 +138,12 @@ Interaction Diagram of Accept Offering (Instructor):
    
 Interaction Diagram of Remove Attendee (Admin):
 
-![Communication Diagram of Remove Attendee](Communication%20Diagram%20Remove%20Attendee.PNG)    
+![Communication Diagram of Remove Attendee](Communication%20Diagram%20Remove%20Attendee.PNG)      
+
+
+Interaction Diagram of Register (Guest User):
+
+![Communication Diagram of Register](Communication%20Diagram%20Register.PNG)   
   
 
 Relational Data Model:
