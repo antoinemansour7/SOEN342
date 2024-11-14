@@ -133,7 +133,12 @@ Interaction Diagram of Book (Client):
 
 Interaction Diagram of Accept Offering (Instructor):
 
-![Communication Diagram of Create Location](Communication%20Diagram%20Accept%20Offering.PNG) 
+![Communication Diagram of Create Location](Communication%20Diagram%20Accept%20Offering.PNG)       
+
+   
+Interaction Diagram of Remove Attendee (Admin):
+
+![Communication Diagram of Remove Attendee](Communication%20Diagram%20Remove%20Attendee.PNG)    
   
 
 Relational Data Model:
