@@ -7,6 +7,19 @@
 <body>
     <div class="form-container">
         <h2>Create Location</h2>
+
+        <!-- Flash messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <p class="flash-message {{ category }}">{{ message }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <!-- Form -->
         <form method="POST" action="">
             {{ form.hidden_tag() }}
             <div>

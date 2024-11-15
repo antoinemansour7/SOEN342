@@ -182,6 +182,14 @@ def create_offering():
     return render_template('create_offering.html', form=form)
 
 
+def is_location_unique(city, address, name):
+    """
+    Check if a location with the given city, address, and name already exists.
+    """
+    existing_location = Location.query.filter_by(city=city, address=address, name=name).first()
+    return existing_location is None  # Return True if no existing location is found
+
+
 @app.route('/create_location', methods=['GET', 'POST'])
 @login_required
 def create_location():
@@ -192,6 +200,11 @@ def create_location():
 
     form = LocationForm()
     if form.validate_on_submit():
+        # Check if the location is unique
+        if not is_location_unique(form.city.data, form.address.data, form.name.data):
+            flash("A location with the same city, address, and name already exists.", "warning")
+            return redirect(url_for('create_location'))
+
         # Create a new location
         location = Location(city=form.city.data, address=form.address.data, name=form.name.data)
         db.session.add(location)
@@ -204,6 +217,7 @@ def create_location():
         return redirect(url_for('index'))
 
     return render_template('create_location.html', form=form)
+
 
 
 

@@ -2,20 +2,26 @@
 <html lang="en">
 <head>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-    <title>Offerings</title>
+    <title>Pathways - Offerings</title>
 </head>
 <body>
     <div class="container">
-         <!-- Flash Messages Section for All Messages -->
-{% with messages = get_flashed_messages(with_categories=true) %}
-{% if messages %}
-    <div class="flash-messages">
-        {% for category, message in messages %}
-            <div class="flash-message {{ category }}">{{ message }}</div>
-        {% endfor %}
-    </div>
-{% endif %}
-{% endwith %}
+        <!-- Project Name Header -->
+        <header class="project-header">
+            <h1>Pathways</h1>
+        </header>
+
+        <!-- Flash Messages Section for All Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="flash-message {{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        {% endwith %}
+
         <!-- Top Section (Login/Sign Up) -->
         <div class="top-section">
             {% if not current_user.is_authenticated %}
@@ -39,12 +45,12 @@
                 <a href="{{ url_for('manage_users') }}" class="form-button">Manage Users</a>
             </div>
         {% elif current_user.is_authenticated and current_user.__class__.__name__ == 'Instructor' %}
-        <!-- Instructor Section (View Unassigned Offerings) -->
+            <!-- Instructor Section (View Unassigned Offerings) -->
             <div class="instructor-section">
                 <a href="{{ url_for('unassigned_offerings') }}" class="form-button">View Unassigned Offerings</a>
             </div>
         {% elif current_user.is_authenticated and current_user.__class__.__name__ == 'Client' %}
-        <!-- Client Section (View Your Bookings) -->
+            <!-- Client Section (View Your Bookings) -->
             <div class="client-section">
                 <a href="{{ url_for('view_your_bookings') }}" class="form-button">Your Bookings</a>
             </div>
@@ -64,29 +70,26 @@
                             <p class="spots-available">
                                 Available spots: <span>{{ offering.available_spots }} / {{ offering.maximum_capacity }}</span>
                             </p>
-            
+
                             <!-- Display the instructor's username -->
                             <p class="instructor-info">
                                 Taught by: {{ offering.instructor.username if offering.instructor else 'Unassigned' }}
                             </p>
-            
+
                             <!-- Display the offering type (Private or Group) -->
                             <p class="offering-type">
                                 <p>This offering is taught as: {{ offering.offering_type if offering.offering_type else 'Not specified' }}</p>
-
-
-
                             </p>
-            
+
                             <!-- Check if the offering is available -->
                             {% if offering.available_spots == 0 %}
                                 <p class="unavailable-text">Not Available</p>
                             {% else %}
-                            {% if current_user.is_authenticated and current_user.__class__.__name__ == 'Client' %}
-                            {% if current_user in offering.attendees %}
-                                <p class="attending-text">{{ session['attendance_' ~ offering.id] or 'You are already attending this offering.' }}</p>
-                            {% endif %}
-                            {% endif %}
+                                {% if current_user.is_authenticated and current_user.__class__.__name__ == 'Client' %}
+                                    {% if current_user in offering.attendees %}
+                                        <p class="attending-text">{{ session['attendance_' ~ offering.id] or 'You are already attending this offering.' }}</p>
+                                    {% endif %}
+                                {% endif %}
                             {% endif %}
                         </a>
                         <!-- Attend Button (for clients only) -->
@@ -107,7 +110,6 @@
                     </li>
                 {% endfor %}
             </ul>
-            
         </div>
     </div>
 </body>
