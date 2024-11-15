@@ -64,7 +64,15 @@
                             <p class="spots-available">
                                 Available spots: <span>{{ offering.available_spots }} / {{ offering.maximum_capacity }}</span>
                             </p>
-                            
+            
+                            <!-- Display the instructor's username -->
+                            <p class="instructor-info">
+                                Taught by: {{ offering.instructor.username if offering.instructor else 'Unassigned' }}
+                            </p>
+            
+                            <!-- Display the offering type (Private or Group) -->
+                           
+            
                             <!-- Check if the offering is available -->
                             {% if offering.available_spots == 0 %}
                                 <p class="unavailable-text">Not Available</p>
@@ -73,9 +81,7 @@
                             {% if current_user in offering.attendees %}
                                 <p class="attending-text">{{ session['attendance_' ~ offering.id] or 'You are already attending this offering.' }}</p>
                             {% endif %}
-                        {% endif %}
-                        
-
+                            {% endif %}
                             {% endif %}
                         </a>
                         <!-- Attend Button (for clients only) -->
@@ -92,11 +98,11 @@
                             {% endif %}
                             <button type="submit" class="form-button">Attend</button>
                         </form>
-                        
                         {% endif %}
                     </li>
                 {% endfor %}
             </ul>
+            
         </div>
     </div>
 </body>
