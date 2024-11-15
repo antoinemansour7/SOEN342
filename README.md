@@ -202,7 +202,6 @@ inv UniqueOfferingsByLocation:
 ```
 context Booking
 inv UnderageBooking:
-    -- Ensure that only adult clients (age >= 18) can make a booking
     self.client.age >= 18
 ```
 #### Requirement 3:  
@@ -211,10 +210,9 @@ inv UnderageBooking:
 ```
 context Offering
 inv CityMatchesInstructorAvailability:
-    let offeringCity : String = self.location.city in
-        Instructor.allInstances()->exists(instructor |
-            instructor.id = self.instructor_id and
-            instructor.city = offeringCity)
+    Instructor.allInstances()->exists(instructor |
+        instructor.id = self.instructor_id and
+        instructor.city = self.location.city)
 
 ```
 #### Requirement 4:
