@@ -46,21 +46,52 @@ System Sequence Diagram of Clients:
 
 #### 1. `login`
 
-**Operation**: `login(adminCredentials)`    
-**Cross reference**: Use Case Process Offerings
+**Operation**: `login(username, password)`    
+**Cross reference**: Use Case Process Offerings, Use Case Process Bookings
 
 - **Preconditions**:  
-  - The `Administrator’s` credentials must exist in the system.
+  - The credentials must exist in the system.
 
 - **Postconditions**:  
-  - If valid, the `Administrator` is authenticated and logged in.
+  - If valid, the `setRole` method sets the role of the user as either an `admin`, `instructor` or `client`.
+  - If valid, the user with the role is authenticated into the system
   - If invalid, an error message is shown.
 
 ---
 
-#### 2. `create_offering`
+#### 2. `create_location`
 
-**Operation**: `createOffering()`    
+**Operation**: `create_location(city, address, location)`    
+**Cross reference**: Use Case Process Offerings
+
+- **Preconditions**:  
+  - The `Administrator` is logged in.
+  - The `location` details must include valid detals.
+  
+- **Postconditions**:  
+  - If the `location` is unique (checked by `checkLocationUniqueness()`) with valid details, the system creates the new offering.
+  - If the `location` is not unique or has invalid details, the system returns an error message.
+
+---     
+
+#### 3. `checkLocationUniqueness`
+
+**Operation**: `checkLocationUniqueness()`    
+**Cross reference**: Use Case Process Offerings
+
+- **Preconditions**:  
+  - The system has received a valid location submission from the `administrator`.
+
+- **Postconditions**:  
+  - The system confirms that no location already exists at the same city, name, and address.
+  - If no conflict is found, it proceeds to confirm the creation.
+  - If a conflict is found, it returns an error message to the `administrator`.
+ 
+--- 
+
+#### 4. `create_offering`
+
+**Operation**: `create_offering(lessonType, offeringType, startTime, endTime, date, maxCapacity)`    
 **Cross reference**: Use Case Process Offerings
 
 - **Preconditions**:  
@@ -68,14 +99,14 @@ System Sequence Diagram of Clients:
   - The `offering` details must include valid detals.
   
 - **Postconditions**:  
-  - If the `offering` is unique (checked by `checkOfferingUniqueness`), the system creates the new offering.
-  - If the `offering` is not unique, the system returns an error message.
+  - If the `offering` is unique (checked by `checkOfferingUniqueness`) with valid details, the system creates the new offering.
+  - If the `offering` is not unique or has invalid details, the system returns an error message.
 
 ---     
 
-#### 3. `checkOfferingUniqueness`
+#### 5. `checkOfferingUniqueness`
 
-**Operation**: `checkOfferingUniqueness(offeringDetails)`    
+**Operation**: `checkOfferingUniqueness()`    
 **Cross reference**: Use Case Process Offerings
 
 - **Preconditions**:  
@@ -88,33 +119,66 @@ System Sequence Diagram of Clients:
 
 ---
 
-#### 4. `viewAvailableOfferings`
+#### 6. `diaplayUnassignedOfferings`
 
-**Operation**: `viewAvailableOfferings()`     
+**Operation**: `diaplayUnassignedOfferings()`     
 **Cross reference**: Use Case Process Offerings
 
 - **Preconditions**:  
-  - The `Instructor` is authenticated and logged in.
+  - The `admin` or `Instructor` is authenticated and logged in.
 
 - **Postconditions**:  
-  - The system returns a list of all available `offerings` (those that have not been selected by other instructors).
+  - If there exists, the system returns a list of all available `offerings` (those that have not been claimed by an instructor).
+  - If there are no unassigned `offerings`, an empty page is shown.
 
 ---
 
-#### 5. `claim_offering`
+#### 7. `claim_offering`
 
-**Operation**: `selectOffering(offeringId)`     
+**Operation**: `claim_offering(offering_id)`     
 **Cross reference**: Use Case Process Offerings
 
 - **Preconditions**:  
   - The `Instructor` is authenticated and logged in.
-  - The `offering` must be available (not yet selected by another instructor).
+  - The `offering` must be available (found by `diaplayUnassignedOfferings()`).
 
 - **Postconditions**:  
   - The selected `offering` is now associated with the `instructor`.
-  - The `offering` is marked as unavailable for other `instructors`.
+  - The `offering` is removed from the list of unassigned offerings`.
+  - The `offering` is now public and anyone can see it or attend it.
 
---- 
+---       
+
+#### 8. `displayOfferings`
+
+**Operation**: `dispplayOfferings()`     
+**Cross reference**: Use Case Process Offerings, Process Bookings
+
+- **Preconditions**:  
+  - An `offering` has been claimed by an instructor. 
+
+- **Postconditions**:  
+  - The list of `offerings` claimed by instructors are displayed to the user (guest or registered).
+
+---
+
+#### 9. `attend_offering`
+
+**Operation**: `attend_offering(offering_id)`     
+**Cross reference**: Use Case Process Bookings
+
+- **Preconditions**:  
+  - The `Client` is authenticated and logged in.
+  - The `Client` has selected the person to book the offering for (themselves or a child that they will accompany)
+  - The `offering` must have available capacity.
+  - The `offering`'s startTime and endTime must not conflict with another scheduled booking of the `Client`. 
+
+- **Postconditions**:  
+  - The selected `offering` is now booked by the `Client`.
+  - The `offering` is now displayed with a capacity 1 less than before.
+  - The `offering` and its details are now available under `bookings` of the `Client`.
+
+---
 
 Interaction Diagram of Create Location (Admin):
 
