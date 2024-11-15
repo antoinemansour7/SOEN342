@@ -165,6 +165,7 @@ def create_offering():
             end_time=form.end_time.data,
             maximum_capacity=maximum_capacity,
             offering_type=form.offering_type.data
+           
         )
 
         # Set 'available_spots' after creation

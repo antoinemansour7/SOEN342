@@ -71,7 +71,12 @@
                             </p>
             
                             <!-- Display the offering type (Private or Group) -->
-                           
+                            <p class="offering-type">
+                                <p>This offering is taught as: {{ offering.offering_type if offering.offering_type else 'Not specified' }}</p>
+
+
+
+                            </p>
             
                             <!-- Check if the offering is available -->
                             {% if offering.available_spots == 0 %}
