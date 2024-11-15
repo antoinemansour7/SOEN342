@@ -1,7 +1,46 @@
 # SOEN342 Project
 
 ### Antoine Mansour (40250454) Section H
-### Sadee Mohammad Shadman (40236919) Scetion H    
+### Sadee Mohammad Shadman (40236919) Section H    
+
+---
+
+## Getting Started
+
+To set up and start the application, follow these steps:
+
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/antoinemansour7/SOEN342.git
+   cd SOEN342
+
+2. **Set up a virtual environment (recommended)**:
+    ```bash
+    python3 -m venv venv
+    source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+3. **Install dependencies**:
+    ```bash
+    pip install -r requirements.txt
+
+4. **Set up the database**:
+    ```bash
+    flask db init
+    flask db migrate
+    flask db upgrade
+
+5. **Run the application**:
+    ```bash
+    flask run
+
+The app will be available at http://127.0.0.1:5000.
+
+6. **Login credentials** :
+Admin username: admin
+Admin password: adminaccount
+
+
+
 
 ---
 
