@@ -286,68 +286,69 @@ def attend_offering(offering_id):
     offering = Offering.query.get_or_404(offering_id)
     child_id = request.form.get('child_id')
 
-    with reader_lock:
-        global reader_count
-        reader_count += 1
-        if reader_count == 1:
-            writer_lock.acquire()
+    # Conflict check: Restrict to current user and their children
+    conflict = Booking.query.filter(
+        (
+            (Booking.client_id == current_user.id) | 
+            (Booking.child_id.in_([child.id for child in current_user.children]))
+        ),
+        Booking.start_time == offering.start_time,
+        Booking.end_time == offering.end_time,
+        Booking.date == offering.start_time.date()
+    ).first()
 
-        conflict = Booking.query.filter(
-            (Booking.client_id == current_user.id) | (Booking.child_id == child_id),
-            Booking.start_time == offering.start_time.strftime('%I:%M %p'),
-            Booking.end_time == offering.end_time.strftime('%I:%M %p'),
-            Booking.date == offering.start_time.strftime('%B %d')
-        ).first()
-
-        if conflict:
+    if conflict:
+        if conflict.child_id:  # If conflict is for a child
+            child = Child.query.get(conflict.child_id)
+            conflict_msg = f"Your child {child.name} already has a booking at the same time ({conflict.start_time} - {conflict.end_time})."
+        else:
             conflict_msg = f"You already have a booking at the same time ({conflict.start_time} - {conflict.end_time})."
-            flash(conflict_msg, 'danger')
-            return redirect(request.referrer or url_for('index'))
+        flash(conflict_msg, 'danger')
+        return redirect(request.referrer or url_for('index'))
 
-        if offering.available_spots > 0:
-            if child_id:
-                child = Child.query.get(child_id)
-                if child and child not in offering.attendees:
-                    offering.attendees.append(current_user)
-                    offering.available_spots -= 1
-                    booking = Booking(
-                        offering_id=offering.id,
-                        lesson_type=offering.lesson_type,
-                        start_time=offering.start_time.strftime('%I:%M %p'),
-                        end_time=offering.end_time.strftime('%I:%M %p'),
-                        date=offering.start_time.strftime('%B %d'),
-                        client_id=current_user.id,
-                        child_id=child.id
-                    )
-                    db.session.add(booking)
-                    db.session.commit()
-                    session[f'attendance_{offering.id}'] = f'{child.name} is attending this offering.'
-                    flash(f'{child.name} is now attending this offering!', 'success')
-                else:
-                    flash(f'{child.name} is already attending this offering.', 'info')
-            elif current_user not in offering.attendees:
+    # Proceed with booking
+    if offering.available_spots > 0:
+        if child_id:
+            # Booking for child
+            child = Child.query.get(child_id)
+            if child and child not in offering.attendees:
+                offering.attendees.append(current_user)  # Associate client for record
+                offering.available_spots -= 1
+                booking = Booking(
+                    offering_id=offering.id,
+                    lesson_type=offering.lesson_type,
+                    start_time=offering.start_time,
+                    end_time=offering.end_time,
+                    date=offering.start_time.date(),
+                    client_id=current_user.id,
+                    child_id=child.id
+                )
+                db.session.add(booking)
+                db.session.commit()
+                flash(f'{child.name} is now attending this offering!', 'success')
+            else:
+                flash(f'{child.name} is already attending this offering.', 'info')
+        else:
+            # Booking for the client
+            if current_user not in offering.attendees:
                 offering.attendees.append(current_user)
                 offering.available_spots -= 1
                 booking = Booking(
                     offering_id=offering.id,
                     lesson_type=offering.lesson_type,
-                    start_time=offering.start_time.strftime('%I:%M %p'),
-                    end_time=offering.end_time.strftime('%I:%M %p'),
-                    date=offering.start_time.strftime('%B %d'),
+                    start_time=offering.start_time,
+                    end_time=offering.end_time,
+                    date=offering.start_time.date(),
                     client_id=current_user.id
                 )
                 db.session.add(booking)
                 db.session.commit()
-                session[f'attendance_{offering.id}'] = 'You are attending this offering.'
                 flash('You are now attending this offering!', 'success')
-        else:
-            flash('Sorry, no available spots left for this offering.', 'danger')
-
-        reader_count -= 1
-        if reader_count == 0:
-            writer_lock.release()
+    else:
+        flash('Sorry, no available spots left for this offering.', 'danger')
 
     return redirect(url_for('index'))
+
 
 @app.route('/view_your_bookings')
 @login_required
