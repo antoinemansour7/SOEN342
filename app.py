@@ -4,6 +4,7 @@ from flask_migrate import Migrate
 from forms import LoginForm, ClientRegistrationForm, InstructorRegistrationForm, OfferingForm, LocationForm
 from models import *
 from flask_login import LoginManager, login_user, current_user, logout_user, login_required
+from threading import Lock
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your_secret_key'
@@ -17,6 +18,11 @@ migrate = Migrate(app, db)
 
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
+
+
+writer_lock = Lock()
+reader_lock = Lock()
+reader_count = 0
 
 
 @login_manager.user_loader
@@ -136,47 +142,39 @@ def login():
 @app.route('/create_offering', methods=['GET', 'POST'])
 @login_required
 def create_offering():
-    if not isinstance(current_user, Admin):  # Ensure only the admin can create offerings
+    if not isinstance(current_user, Admin):
         flash('You do not have permission to access this page.', 'danger')
         return redirect(url_for('index'))
 
     form = OfferingForm()
 
     if form.validate_on_submit():
-        # Determine maximum capacity: default to 1 for private offerings
-        maximum_capacity = form.maximum_capacity.data if form.offering_type.data == "Group" else 1
+        with writer_lock:
+            max_capacity = form.maximum_capacity.data if form.offering_type.data == "Group" else 1
 
-        # Check for overlapping offerings at the same location and time
-        overlapping_offering = Offering.query.filter(
-            Offering.location_id == form.location.data,
-            Offering.start_time < form.end_time.data,
-            Offering.end_time > form.start_time.data
-        ).first()
+            overlap = Offering.query.filter(
+                Offering.location_id == form.location.data,
+                Offering.start_time < form.end_time.data,
+                Offering.end_time > form.start_time.data
+            ).first()
 
-        if overlapping_offering:
-            flash('This location already has an offering scheduled at the same time.', 'danger')
-            return render_template('create_offering.html', form=form)
+            if overlap:
+                flash('This location already has an offering scheduled at the same time.', 'danger')
+                return render_template('create_offering.html', form=form)
 
-        # Create the Offering object without 'available_spots' in __init__
-        new_offering = Offering(
-            lesson_type=form.lesson_type.data,
-            location_id=form.location.data,
-            start_time=form.start_time.data,
-            end_time=form.end_time.data,
-            maximum_capacity=maximum_capacity,
-            offering_type=form.offering_type.data
-           
-        )
+            new_offering = Offering(
+                lesson_type=form.lesson_type.data,
+                location_id=form.location.data,
+                start_time=form.start_time.data,
+                end_time=form.end_time.data,
+                maximum_capacity=max_capacity,
+                offering_type=form.offering_type.data
+            )
+            new_offering.available_spots = max_capacity
 
-        # Set 'available_spots' after creation
-        new_offering.available_spots = maximum_capacity
-
-        # Add the new offering to the database
-        db.session.add(new_offering)
-        db.session.commit()
-
-        # Add the offering to OfferingsCatalog
-        OfferingsCatalog.offerings.append(new_offering)
+            db.session.add(new_offering)
+            db.session.commit()
+            OfferingsCatalog.offerings.append(new_offering)
 
         flash('Offering created successfully!', 'success')
         return redirect(url_for('index'))
@@ -198,10 +196,15 @@ def create_location():
         location = Location(city=form.city.data, address=form.address.data, name=form.name.data)
         db.session.add(location)
         db.session.commit()
+
+        # Append the new location to the LocationsCatalog
+        LocationsCatalog.locations.append(location)
+
         flash("Location created successfully!", "success")
         return redirect(url_for('index'))
 
     return render_template('create_location.html', form=form)
+
 
 
 @app.route('/logout')
@@ -267,71 +270,70 @@ def attend_offering(offering_id):
         return redirect(url_for('index'))
 
     offering = Offering.query.get_or_404(offering_id)
-    selected_child_id = request.form.get('child_id')  # Get 'child_id' if selected in form
+    child_id = request.form.get('child_id')
 
-    # Check for existing bookings with the same start and end time
-    conflicting_booking = Booking.query.filter(
-        (Booking.client_id == current_user.id) | (Booking.child_id == selected_child_id),
-        Booking.start_time == offering.start_time.strftime('%I:%M %p'),
-        Booking.end_time == offering.end_time.strftime('%I:%M %p'),
-        Booking.date == offering.start_time.strftime('%B %d')
-    ).first()
+    with reader_lock:
+        global reader_count
+        reader_count += 1
+        if reader_count == 1:
+            writer_lock.acquire()
 
-    if conflicting_booking:
-        conflict_message = (
-            f"You already have a booking at the same time "
-            f"({conflicting_booking.start_time} - {conflicting_booking.end_time})."
-        )
-        flash(conflict_message, 'danger')
-        return redirect(request.referrer or url_for('index'))
+        conflict = Booking.query.filter(
+            (Booking.client_id == current_user.id) | (Booking.child_id == child_id),
+            Booking.start_time == offering.start_time.strftime('%I:%M %p'),
+            Booking.end_time == offering.end_time.strftime('%I:%M %p'),
+            Booking.date == offering.start_time.strftime('%B %d')
+        ).first()
 
-    if offering.available_spots > 0:
-        # Process booking for either client or child
-        if selected_child_id:
-            child = Child.query.get(selected_child_id)
-            if child and child not in offering.attendees:
+        if conflict:
+            conflict_msg = f"You already have a booking at the same time ({conflict.start_time} - {conflict.end_time})."
+            flash(conflict_msg, 'danger')
+            return redirect(request.referrer or url_for('index'))
+
+        if offering.available_spots > 0:
+            if child_id:
+                child = Child.query.get(child_id)
+                if child and child not in offering.attendees:
+                    offering.attendees.append(current_user)
+                    offering.available_spots -= 1
+                    booking = Booking(
+                        offering_id=offering.id,
+                        lesson_type=offering.lesson_type,
+                        start_time=offering.start_time.strftime('%I:%M %p'),
+                        end_time=offering.end_time.strftime('%I:%M %p'),
+                        date=offering.start_time.strftime('%B %d'),
+                        client_id=current_user.id,
+                        child_id=child.id
+                    )
+                    db.session.add(booking)
+                    db.session.commit()
+                    session[f'attendance_{offering.id}'] = f'{child.name} is attending this offering.'
+                    flash(f'{child.name} is now attending this offering!', 'success')
+                else:
+                    flash(f'{child.name} is already attending this offering.', 'info')
+            elif current_user not in offering.attendees:
                 offering.attendees.append(current_user)
                 offering.available_spots -= 1
-
-                # Create a new Booking for the child
                 booking = Booking(
                     offering_id=offering.id,
                     lesson_type=offering.lesson_type,
                     start_time=offering.start_time.strftime('%I:%M %p'),
                     end_time=offering.end_time.strftime('%I:%M %p'),
                     date=offering.start_time.strftime('%B %d'),
-                    client_id=current_user.id,
-                    child_id=child.id
+                    client_id=current_user.id
                 )
                 db.session.add(booking)
                 db.session.commit()
+                session[f'attendance_{offering.id}'] = 'You are attending this offering.'
+                flash('You are now attending this offering!', 'success')
+        else:
+            flash('Sorry, no available spots left for this offering.', 'danger')
 
-                session[f'attendance_{offering.id}'] = f'Your child {child.name} is attending this offering.'
-                flash(f'{child.name} is now attending this offering!', 'success')
-            else:
-                flash(f'{child.name} is already attending this offering.', 'info')
-        elif current_user not in offering.attendees:
-            offering.attendees.append(current_user)
-            offering.available_spots -= 1
-
-            # Create a new Booking for the client
-            booking = Booking(
-                offering_id=offering.id,
-                lesson_type=offering.lesson_type,
-                start_time=offering.start_time.strftime('%I:%M %p'),
-                end_time=offering.end_time.strftime('%I:%M %p'),
-                date=offering.start_time.strftime('%B %d'),
-                client_id=current_user.id
-            )
-            db.session.add(booking)
-            db.session.commit()
-            session[f'attendance_{offering.id}'] = 'You are already attending this offering.'
-            flash('You are now attending this offering!', 'success')
-    else:
-        flash('Sorry, no available spots left for this offering.', 'danger')
+        reader_count -= 1
+        if reader_count == 0:
+            writer_lock.release()
 
     return redirect(url_for('index'))
-
 
 @app.route('/view_your_bookings')
 @login_required
