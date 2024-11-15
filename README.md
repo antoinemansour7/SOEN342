@@ -58,7 +58,7 @@ System Sequence Diagram of Clients:
 
 ---
 
-#### 2. `createOffering`
+#### 2. `create_offering`
 
 **Operation**: `createOffering()`    
 **Cross reference**: Use Case Process Offerings
@@ -101,7 +101,7 @@ System Sequence Diagram of Clients:
 
 ---
 
-#### 5. `selectOffering`
+#### 5. `claim_offering`
 
 **Operation**: `selectOffering(offeringId)`     
 **Cross reference**: Use Case Process Offerings
