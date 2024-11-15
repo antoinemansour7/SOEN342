@@ -141,11 +141,12 @@ System Sequence Diagram of Clients:
 - **Preconditions**:  
   - The `Instructor` is authenticated and logged in.
   - The `offering` must be available (found by `diaplayUnassignedOfferings()`).
+  - The `offering` schedule must not conflict with another claimed offering's schedule of the instructor.
   - The `offering` city and lessonType must match the `Instructor` city and speciality that they are available to work in.
 
 - **Postconditions**:  
   - The selected `offering` is now associated with the `instructor`.
-  - The `offering` is removed from the list of unassigned offerings`.
+  - The `offering` is removed from the list of unassigned offerings.
   - The `offering` is now public and anyone can see it or attend it.
 
 ---       
