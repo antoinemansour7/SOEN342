@@ -40,6 +40,14 @@ Admin username: admin
 Admin password: adminaccount
 
 
+---
+**Concurrency Management with Locks**
+
+To ensure data consistency and thread safety, we implemented reader-writer locks using Python's threading.Lock. Critical operations, such as creating offerings, creating locations, and attending offerings, are protected with locks to prevent race conditions.
+
+Writer Locks: Used in routes like create_offering and create_location to ensure only one Admin can modify shared resources (e.g., the database and in-memory catalogs) at a time.
+Reader and Writer Locks: Used in attend_offering to allow multiple clients to read offering details simultaneously, while ensuring only one client can update booking details at a time.
+This approach ensures consistency and prevents conflicting updates during concurrent user actions.
 
 
 ---
