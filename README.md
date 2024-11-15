@@ -141,6 +141,7 @@ System Sequence Diagram of Clients:
 - **Preconditions**:  
   - The `Instructor` is authenticated and logged in.
   - The `offering` must be available (found by `diaplayUnassignedOfferings()`).
+  - The `offering` city must match the `Instructor` city that they are available to work in.
 
 - **Postconditions**:  
   - The selected `offering` is now associated with the `instructor`.
