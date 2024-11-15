@@ -71,25 +71,10 @@ System Sequence Diagram of Clients:
 - **Postconditions**:  
   - If the `location` is unique (checked by `checkLocationUniqueness()`) with valid details, the system creates the new offering.
   - If the `location` is not unique or has invalid details, the system returns an error message.
-
----     
-
-#### 3. `checkLocationUniqueness`
-
-**Operation**: `checkLocationUniqueness()`    
-**Cross reference**: Use Case Process Offerings
-
-- **Preconditions**:  
-  - The system has received a valid location submission from the `administrator`.
-
-- **Postconditions**:  
-  - The system confirms that no location already exists at the same city, name, and address.
-  - If no conflict is found, it proceeds to confirm the creation.
-  - If a conflict is found, it returns an error message to the `administrator`.
  
 --- 
 
-#### 4. `create_offering`
+#### 3. `create_offering`
 
 **Operation**: `create_offering(lessonType, offeringType, startTime, endTime, date, maxCapacity)`    
 **Cross reference**: Use Case Process Offerings
@@ -102,24 +87,9 @@ System Sequence Diagram of Clients:
   - If the `offering` is unique (checked by `checkOfferingUniqueness`) with valid details, the system creates the new offering.
   - If the `offering` is not unique or has invalid details, the system returns an error message.
 
----     
-
-#### 5. `checkOfferingUniqueness`
-
-**Operation**: `checkOfferingUniqueness()`    
-**Cross reference**: Use Case Process Offerings
-
-- **Preconditions**:  
-  - The system has received a valid offering submission from the `administrator`.
-
-- **Postconditions**:  
-  - The system confirms that no offering already exists at the same location, date, and time slot.
-  - If no conflict is found, it proceeds to confirm the creation.
-  - If a conflict is found, it returns an error message to the `administrator`.
-
 ---
 
-#### 6. `diaplayUnassignedOfferings`
+#### 4. `diaplayUnassignedOfferings`
 
 **Operation**: `diaplayUnassignedOfferings()`     
 **Cross reference**: Use Case Process Offerings
@@ -133,7 +103,7 @@ System Sequence Diagram of Clients:
 
 ---
 
-#### 7. `claim_offering`
+#### 5. `claim_offering`
 
 **Operation**: `claim_offering(offering_id)`     
 **Cross reference**: Use Case Process Offerings
@@ -151,7 +121,7 @@ System Sequence Diagram of Clients:
 
 ---       
 
-#### 8. `displayOfferings`
+#### 6. `displayOfferings`
 
 **Operation**: `dispplayOfferings()`     
 **Cross reference**: Use Case Process Offerings, Process Bookings
@@ -164,7 +134,7 @@ System Sequence Diagram of Clients:
 
 ---
 
-#### 9. `attend_offering`
+#### 7. `attend_offering`
 
 **Operation**: `attend_offering(offering_id)`     
 **Cross reference**: Use Case Process Bookings
