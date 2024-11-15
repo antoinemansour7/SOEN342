@@ -6,6 +6,16 @@
 </head>
 <body>
     <div class="container">
+         <!-- Flash Messages Section for All Messages -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+    <div class="flash-messages">
+        {% for category, message in messages %}
+            <div class="flash-message {{ category }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+{% endif %}
+{% endwith %}
         <!-- Top Section (Login/Sign Up) -->
         <div class="top-section">
             {% if not current_user.is_authenticated %}

@@ -5,8 +5,6 @@ from forms import LoginForm, ClientRegistrationForm, InstructorRegistrationForm,
 from models import *
 from flask_login import LoginManager, login_user, current_user, logout_user, login_required
 
-
-
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your_secret_key'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
@@ -20,10 +18,11 @@ migrate = Migrate(app, db)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
+
 @login_manager.user_loader
 def load_user(user_id):
     user_role = session.get('role')
-    
+
     if user_role == "admin":
         return Admin.query.get(int(user_id))
     elif user_role == "instructor":
@@ -33,22 +32,17 @@ def load_user(user_id):
     return None
 
 
-
-
 @app.route('/')
 def index():
     assigned_offerings = Offering.query.filter_by(is_assigned=True).all()
     unassigned_offerings = []
-    
+
     # Show unassigned offerings only for Admin or Instructor
     if current_user.is_authenticated and session.get('role') in ["admin", "instructor"]:
         unassigned_offerings = Offering.query.filter_by(is_assigned=False).all()
 
-    return render_template('index.html', assigned_offerings=assigned_offerings, unassigned_offerings=unassigned_offerings)
-
-
-
-
+    return render_template('index.html', assigned_offerings=assigned_offerings,
+                           unassigned_offerings=unassigned_offerings)
 
 
 # Register choice route
@@ -62,20 +56,20 @@ def register():
 def register_client():
     if current_user.is_authenticated:
         return redirect(url_for('index'))
-    
+
     form = ClientRegistrationForm()
-    
+
     if form.validate_on_submit():
         # Hash the password and create a new Client instance
         hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
         client = Client(
-            username=form.username.data, 
-            name=form.name.data, 
-            phone=form.phone.data, 
-            password=hashed_password, 
+            username=form.username.data,
+            name=form.name.data,
+            phone=form.phone.data,
+            password=hashed_password,
             age=form.age.data
         )
-        
+
         # Add and commit the client to the database
         db.session.add(client)
         db.session.commit()
@@ -85,21 +79,17 @@ def register_client():
             # Only proceed if child fields pass validation and contain data
             if form.child_name.data and form.child_age.data and form.child_relation.data:
                 child = Child(
-                    name=form.child_name.data, 
-                    age=form.child_age.data, 
-                    relation=form.child_relation.data, 
+                    name=form.child_name.data,
+                    age=form.child_age.data,
+                    relation=form.child_relation.data,
                     guardian_id=client.id
                 )
                 db.session.add(child)
                 db.session.commit()
-        
-        
+
         return redirect(url_for('login'))
-    
+
     return render_template('register_client.html', form=form)
-
-
-
 
 
 # Register instructor route
@@ -110,12 +100,14 @@ def register_instructor():
     form = InstructorRegistrationForm()
     if form.validate_on_submit():
         hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
-        instructor = Instructor(username=form.username.data, specialization=form.specialization.data, password=hashed_password, phone=form.phone.data, city=form.city.data)
+        instructor = Instructor(username=form.username.data, specialization=form.specialization.data,
+                                password=hashed_password, phone=form.phone.data, city=form.city.data)
         db.session.add(instructor)
         db.session.commit()
-        
+
         return redirect(url_for('login'))
     return render_template('register_instructor.html', form=form)
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -124,7 +116,7 @@ def login():
         user = Admin.query.filter_by(username=form.username.data).first() or \
                Instructor.query.filter_by(username=form.username.data).first() or \
                Client.query.filter_by(username=form.username.data).first()
-        
+
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             if isinstance(user, Admin):
                 session['role'] = 'admin'
@@ -132,18 +124,13 @@ def login():
                 session['role'] = 'instructor'
             elif isinstance(user, Client):
                 session['role'] = 'client'
-                
+
             login_user(user)
             # Removed success flash message
             return redirect(url_for('index'))
         else:
             flash('Login unsuccessful. Please check username and password.', 'danger')
     return render_template('login.html', form=form)
-
-
-
-
-
 
 
 @app.route('/create_offering', methods=['GET', 'POST'])
@@ -196,9 +183,6 @@ def create_offering():
     return render_template('create_offering.html', form=form)
 
 
-
-
-
 @app.route('/create_location', methods=['GET', 'POST'])
 @login_required
 def create_location():
@@ -222,8 +206,9 @@ def create_location():
 @app.route('/logout')
 def logout():
     logout_user()
-    
+
     return redirect(url_for('index'))
+
 
 @app.route('/unassigned_offerings')
 @login_required
@@ -234,7 +219,6 @@ def unassigned_offerings():
 
     offerings = Offering.query.filter_by(is_assigned=False).all()
     return render_template('unassigned_offerings.html', offerings=offerings)
-
 
 
 @app.route('/claim_offering/<int:offering_id>', methods=['POST'])
@@ -274,10 +258,6 @@ def claim_offering(offering_id):
     return redirect(url_for('index'))
 
 
-
-
-
-
 @app.route('/attend_offering/<int:offering_id>', methods=['POST'])
 @login_required
 def attend_offering(offering_id):
@@ -288,14 +268,28 @@ def attend_offering(offering_id):
     offering = Offering.query.get_or_404(offering_id)
     selected_child_id = request.form.get('child_id')  # Get 'child_id' if selected in form
 
-   
+    # Check for existing bookings with the same start and end time
+    conflicting_booking = Booking.query.filter(
+        (Booking.client_id == current_user.id) | (Booking.child_id == selected_child_id),
+        Booking.start_time == offering.start_time.strftime('%I:%M %p'),
+        Booking.end_time == offering.end_time.strftime('%I:%M %p'),
+        Booking.date == offering.start_time.strftime('%B %d')
+    ).first()
+
+    if conflicting_booking:
+        conflict_message = (
+            f"You already have a booking at the same time "
+            f"({conflicting_booking.start_time} - {conflicting_booking.end_time})."
+        )
+        flash(conflict_message, 'danger')
+        return redirect(request.referrer or url_for('index'))
 
     if offering.available_spots > 0:
         # Process booking for either client or child
         if selected_child_id:
             child = Child.query.get(selected_child_id)
             if child and child not in offering.attendees:
-                offering.attendees.append(child)
+                offering.attendees.append(current_user)
                 offering.available_spots -= 1
 
                 # Create a new Booking for the child
@@ -310,10 +304,12 @@ def attend_offering(offering_id):
                 )
                 db.session.add(booking)
                 db.session.commit()
+
+                session[f'attendance_{offering.id}'] = f'Your child {child.name} is attending this offering.'
                 flash(f'{child.name} is now attending this offering!', 'success')
             else:
                 flash(f'{child.name} is already attending this offering.', 'info')
-        else:
+        elif current_user not in offering.attendees:
             offering.attendees.append(current_user)
             offering.available_spots -= 1
 
@@ -328,6 +324,7 @@ def attend_offering(offering_id):
             )
             db.session.add(booking)
             db.session.commit()
+            session[f'attendance_{offering.id}'] = 'You are already attending this offering.'
             flash('You are now attending this offering!', 'success')
     else:
         flash('Sorry, no available spots left for this offering.', 'danger')
@@ -347,7 +344,6 @@ def view_your_bookings():
     return render_template('view_your_bookings.html', bookings=bookings)
 
 
-
 @app.route('/delete_offering/<int:offering_id>', methods=['POST'])
 @login_required
 def delete_offering(offering_id):
@@ -355,7 +351,7 @@ def delete_offering(offering_id):
     if current_user.role != 'admin':
         flash('Only admins can delete offerings.', 'danger')
         return redirect(url_for('index'))
-    
+
     offering = Offering.query.get_or_404(offering_id)
     db.session.delete(offering)
     db.session.commit()
@@ -364,7 +360,7 @@ def delete_offering(offering_id):
     # Redirect back to the unassigned offerings page if the user came from there
     if request.referrer and 'unassigned_offerings' in request.referrer:
         return redirect(url_for('unassigned_offerings'))
-    
+
     return redirect(url_for('index'))
 
 
@@ -410,7 +406,7 @@ def manage_users():
     if not isinstance(current_user, Admin):
         flash('Only admins can access this page.', 'danger')
         return redirect(url_for('index'))
-    
+
     # Fetch all clients and instructors
     clients = Client.query.all()
     instructors = Instructor.query.all()
@@ -423,10 +419,10 @@ def delete_user(user_id, user_type):
     if not isinstance(current_user, Admin):
         flash('Only admins can delete users.', 'danger')
         return redirect(url_for('index'))
-    
+
     if user_type == 'client':
         user = Client.query.get_or_404(user_id)
-        
+
         # Update available spots for each offering the client was attending
         for booking in user.bookings:
             offering = booking.offering
@@ -436,7 +432,7 @@ def delete_user(user_id, user_type):
 
     elif user_type == 'instructor':
         user = Instructor.query.get_or_404(user_id)
-        
+
         # Unassign all offerings taught by this instructor
         for offering in user.offerings:
             offering.instructor_id = None  # Unassign instructor
@@ -452,10 +448,5 @@ def delete_user(user_id, user_type):
     return redirect(url_for('manage_users'))
 
 
-
-
-
-
 if __name__ == "__main__":
     app.run(debug=True)
-
