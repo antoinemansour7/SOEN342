@@ -293,7 +293,22 @@ Interaction Diagram of Remove Attendee (Admin):
 
 Interaction Diagram of Register (Guest User):
 
-![Communication Diagram of Register](Communication%20Diagram%20Register.PNG)   
+![Communication Diagram of Register](Communication%20Diagram%20Register.PNG)      
+
+
+Interaction Diagram of Display Offerings (User):
+
+![Communication Diagram of Display Offerings](Communication%20Diagram%20Display%20Offerings.PNG)    
+
+
+Interaction Diagram of Display Unassigned Offerings (Admin, Instructor):
+
+![Communication Diagram of Display Unassigned Offerings](Communication%20Diagram%20Unassigned%20Offerings.PNG)     
+
+
+Interaction Diagram of Display Bookings (Client):
+
+![Communication Diagram of Display Bookings](Communication%20Diagram%20Display%20Bookings.PNG) 
   
 
 Relational Data Model:
