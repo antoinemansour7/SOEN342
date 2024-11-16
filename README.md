@@ -4,6 +4,10 @@
 ### Sadee Mohammad Shadman (40236919) Section H    
 
 Video : https://www.youtube.com/watch?v=u0fEbt3YS5w
+
+**Note for the TA**
+Because of the short time of the video, we didn't have the time to properly show all the features our app can do, so please make sure to run the app, and explore all the routes. For Example, A user can book multiple offerings if and only if they are not at the same time as one of their previous bookings, etc.
+
 ---
 
 ## Getting Started
