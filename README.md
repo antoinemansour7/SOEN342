@@ -53,25 +53,26 @@ This approach ensures consistency and prevents conflicting updates during concur
 
 ---
 
-#### Use Case UML:    
+### Use Case UML:    
 
 ![Use Case UML](Use%20Case%20UML.png)      
 
 
-#### Domain Model:
+### Domain Model:
 
 ![Domain Model](DomainModel.png)  
 
-#### Class Diagram:
+### Class Diagram:
 
 ![Domain Model](ClassDiagram.png)  
 
 
-#### Package Diagram:
+### Package Diagram:
 
 ![Package Diagram](Package%20Diagram.PNG)     
 
 
+### System Sequence Diagrams:
 System Sequence Diagram of Administrator:
 
 ![System Sequence Admin Scenario](SSD%20Admin.PNG)         
@@ -89,7 +90,7 @@ System Sequence Diagram of Clients:
 ---    
 
 
-### Operation Contracts
+### Operation Contracts:
 
 
 #### 1. `login`
@@ -262,6 +263,8 @@ System Sequence Diagram of Clients:
 
 --- 
 
+### Interaction Diagrams:
+
 Interaction Diagram of Create Location (Admin):
 
 ![Communication Diagram of Create Location](Communication%20Diagram%20Create%20Location.PNG)    
@@ -317,10 +320,12 @@ Interaction Diagram of Delete User (Admin):
 ![Communication Diagram of Delete User](Communication%20Diagram%20Delete%20User.PNG) 
   
 
-Relational Data Model:
+### Relational Data Model:
  ![Relational Data Model](RelationalDataModel.png) 
 
 
+#### OCL Requirements:
+      
 #### Requirement 1:   
 “Offerings are unique. In other words, multiple offerings on the same day and time slot must be offered at a different location.”
 
