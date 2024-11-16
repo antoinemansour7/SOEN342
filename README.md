@@ -38,7 +38,7 @@ The app will be available at http://127.0.0.1:5000.
 
 6. **Login credentials** :
 Admin username: admin
-Admin password: adminaccount
+Admin password: adminpassword
 
 
 ---
