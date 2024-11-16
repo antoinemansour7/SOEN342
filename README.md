@@ -281,9 +281,9 @@ Interaction Diagram of Book (Client):
 ![Communication Diagram of Book](Communication%20Diagram%20Book.PNG)   
 
 
-Interaction Diagram of Accept Offering (Instructor):
+Interaction Diagram of Claim Offering (Instructor):
 
-![Communication Diagram of Create Location](Communication%20Diagram%20Accept%20Offering.PNG)       
+![Communication Diagram of Claim Offering](Communication%20Diagram%20Accept%20Offering.PNG)       
 
    
 Interaction Diagram of Remove Attendee (Admin):
@@ -308,7 +308,12 @@ Interaction Diagram of Display Unassigned Offerings (Admin, Instructor):
 
 Interaction Diagram of Display Bookings (Client):
 
-![Communication Diagram of Display Bookings](Communication%20Diagram%20Display%20Bookings.PNG) 
+![Communication Diagram of Display Bookings](Communication%20Diagram%20Display%20Bookings.PNG)    
+
+
+Interaction Diagram of Delete User (Admin):
+
+![Communication Diagram of Delete User](Communication%20Diagram%20Delete%20User.PNG) 
   
 
 Relational Data Model:
