@@ -136,7 +136,55 @@ System Sequence Diagram of Clients:
 
 ---
 
-#### 4. `diaplayUnassignedOfferings`
+#### 4. `delete_offering`
+
+**Operation**: `delete_offering(offering_id)`    
+**Cross reference**: Use Case Process Offerings
+
+- **Preconditions**:  
+  - The `Administrator` is logged in.
+  - The `offering` must exist in the catalog of offerings.
+  
+- **Postconditions**:  
+  - The `offering` is deleted.
+  - The `offering` is removed from the list of claimed offerings of the assigned instructor.
+  - The `offering` is removed from the list of bookings of the participating clients.
+
+---
+
+#### 5. `remove_attendee`
+
+**Operation**: `remove_attendee(offering_id, user_id)`    
+**Cross reference**: Use Case Process Offerings, Use Case Process Bookings
+
+- **Preconditions**:  
+  - The `Administrator` is logged in.
+  - The `client` must exist in the `offering`'s list of attendees.
+  
+- **Postconditions**:  
+  - The `client` is removed from the list of attendees of the `offering`
+  - The `offering` is removed from the list of bookings of the participating clients.
+  - The `offering` is displayed with a capacity of 1 more than before.
+
+---
+
+#### 6. `delete_user`
+
+**Operation**: `delete_user(user_id, user_type)`    
+**Cross reference**: Use Case Process Offerings
+
+- **Preconditions**:  
+  - The `Administrator` is logged in.
+  - The `user_id` of the selected `user_type` exists in the system
+  
+- **Postconditions**:  
+  - The `user`'s profile is deleted.
+  - If `user_type` was instructor, all claimed `offering` of the instructor is no more public (moved to unassignedOfferings to be claimed)
+  - If `user_type` was client, all attending `offering` from `booking` of the client is removed and displayed with a capacity of 1 more than before.
+
+---
+
+#### 7. `diaplayUnassignedOfferings`
 
 **Operation**: `diaplayUnassignedOfferings()`     
 **Cross reference**: Use Case Process Offerings
@@ -150,7 +198,7 @@ System Sequence Diagram of Clients:
 
 ---
 
-#### 5. `claim_offering`
+#### 8. `claim_offering`
 
 **Operation**: `claim_offering(offering_id)`     
 **Cross reference**: Use Case Process Offerings
@@ -164,11 +212,11 @@ System Sequence Diagram of Clients:
 - **Postconditions**:  
   - The selected `offering` is now associated with the `instructor`.
   - The `offering` is removed from the list of unassigned offerings.
-  - The `offering` is now public and anyone can see it or attend it.
+  - The `offering` is public and anyone can see it or attend it.
 
 ---       
 
-#### 6. `displayOfferings`
+#### 9. `displayOfferings`
 
 **Operation**: `dispplayOfferings()`     
 **Cross reference**: Use Case Process Offerings, Process Bookings
@@ -181,7 +229,7 @@ System Sequence Diagram of Clients:
 
 ---
 
-#### 7. `attend_offering`
+#### 10. `attend_offering`
 
 **Operation**: `attend_offering(offering_id)`     
 **Cross reference**: Use Case Process Bookings
@@ -194,10 +242,24 @@ System Sequence Diagram of Clients:
 
 - **Postconditions**:  
   - The selected `offering` is now booked by the `Client`.
-  - The `offering` is now displayed with a capacity 1 less than before.
+  - The `offering` is displayed with a capacity of 1 less than before.
   - The `offering` and its details are now available under `bookings` of the `Client`.
 
 ---
+
+#### 11. `view_your_bookings`
+
+**Operation**: `view_your_bookings()`     
+**Cross reference**: Use Case Process Bookings
+
+- **Preconditions**:  
+  - The `Client` is authenticated and logged in.
+
+- **Postconditions**:  
+   - If there exists, the system returns a list of all available `bookings` (those that have been selected `attend_offering` by the client).
+   - If there are no `offerings` that have been selected `attend_offering`, an empty array is shown.
+
+--- 
 
 Interaction Diagram of Create Location (Admin):
 
