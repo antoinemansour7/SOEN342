@@ -465,20 +465,6 @@ def delete_user(user_id, user_type):
     flash(f'{user_type.capitalize()} account deleted successfully!', 'success')
     return redirect(url_for('manage_users'))
 
-@app.route('/delete_all_locations', methods=['POST'])
-@login_required
-def delete_all_locations():
-    # Ensure only the admin can perform this action
-    if not current_user.is_authenticated or current_user.role != 'admin':
-        flash("You do not have permission to perform this action.", "danger")
-        return redirect(url_for('index'))
-
-    # Perform a bulk delete
-    db.session.query(Location).delete()
-    db.session.commit()
-
-    flash("All locations have been deleted successfully!", "success")
-    return redirect(url_for('manage_locations'))
 
 
 

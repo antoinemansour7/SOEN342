@@ -3,6 +3,7 @@
 ### Antoine Mansour (40250454) Section H
 ### Sadee Mohammad Shadman (40236919) Section H    
 
+Video : https://www.youtube.com/watch?v=u0fEbt3YS5w
 ---
 
 ## Getting Started
