@@ -324,7 +324,7 @@ Interaction Diagram of Delete User (Admin):
  ![Relational Data Model](RelationalDataModel.png) 
 
 
-#### OCL Requirements:
+### OCL Requirements:
       
 #### Requirement 1:   
 “Offerings are unique. In other words, multiple offerings on the same day and time slot must be offered at a different location.”
